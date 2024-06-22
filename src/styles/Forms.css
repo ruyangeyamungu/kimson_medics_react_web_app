@@ -1,0 +1,132 @@
+.form-box, .otp-area, .asset-box{
+    padding: 20px;
+    background-color: hwb(240 97% 2% / 0.938);
+    border: 1px solid #ffffff;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    text-align: center;
+    margin: 20px;
+    margin-top: 10px;
+    overflow: hidden;
+}
+.sales-form-box{
+    padding: 20px;
+    background-color: hwb(240 97% 2% / 0.938);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    text-align: center;
+    margin: 5px;
+    overflow-x: hidden;  
+    animation: mymove 1s;
+    width: 100%;
+}
+
+@keyframes mymove {
+  50% {transform: rotate(180deg);}
+}
+
+
+.otp-area {
+    display: grid;
+    grid-template-columns: auto auto auto ;
+    padding-left: 45px;
+}
+.otp-area input{
+    width: 70px;
+    height: 70px;
+    color: white;
+    font-weight: bolder;
+    font-size: xx-large;
+
+}
+/* #logo{
+    max-width: 20%;
+} */
+input[type=text], input[type=password], input[type=email] {
+    padding: 20px;
+    background-color: rgba(10, 18, 138, 0.315);
+    border-radius: 4px;
+    margin-top: 10px;
+}
+.phoneNoInput{
+    padding: 20px;
+    background-color: inherit;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+label {
+    font-size: 3vmax;
+    margin: 10px;
+    display: block;
+    font-weight: bold;
+    margin-top: 20px;
+}
+.form-inText-buttons{
+    padding: 10px;
+    border: none;
+    color: green;
+    background-color: inherit;
+    font-weight: bold;
+
+}
+
+.alert {
+    padding: 20px;
+    background-color: #66646410 ;
+    color: #f44336;
+    font-weight: bold;
+    display: block;
+}
+#errorMessage {
+    color: red;
+}
+
+.closebtn {
+    margin-left: 15px;
+    color: #080101;
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.closebtn:hover {
+    color: rgba(0, 0, 0, 0.397);
+}
+.loader {
+    display: block;
+    width: 50px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    padding: 6px;
+    background:
+        conic-gradient(from 135deg at top,currentColor 90deg, #0000 0) 0 calc(50% - 4px)/17px 8.5px,
+        radial-gradient(farthest-side at bottom left,#0000 calc(100% - 6px),currentColor calc(100% - 5px) 99%,#0000) top right/50%  50% content-box content-box,
+        radial-gradient(farthest-side at top,#0000 calc(100% - 6px),currentColor calc(100% - 5px) 99%,#0000) bottom   /100% 50% content-box content-box;
+    background-repeat: no-repeat;
+    animation: l11 1s infinite linear;
+    color: black;
+    margin: auto;
+    }
+@keyframes l11{ 
+        100%{transform: rotate(1turn)}
+    } 
+
+
+/* screens larger than 640px*/
+@media only screen and (min-width:640px) {
+    .otp-area {
+        display: grid;
+        grid-template-columns: auto auto auto auto auto auto;
+        padding-left: 45px;
+    }
+    .otp-area input{
+        width: 70px;
+        height: 70px;
+        margin-right: 10px;
+       
+    }
+    
+}

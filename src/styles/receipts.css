@@ -1,0 +1,49 @@
+.printable-page {
+    text-align: center;
+    margin-left: 10%;
+    margin-right: 10%;
+}
+.printable-page.header {
+    margin: 0px;
+    background-color: rgb(255, 255, 255);
+    padding-top: 20px;
+}
+address h1 {
+    color: hsl(240, 90%, 54%);
+}
+.printable-page.body h3 {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    text-decoration: underline;
+}
+.printable-page.body p {
+    margin: 5px 0px ;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+
+}
+.printable-page.body > table {
+    margin: auto;
+    border-bottom: 2px dotted rgba(0, 0, 0, 0.219);
+    margin-bottom: 30px;
+}
+.printable-page.body >table > th >td {
+    margin: auto;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.printable-page.body >table > caption {
+    font-weight: bolder;
+    
+}
+.printable-page .footer {
+    color: white;
+    position: absolute;
+    top: 95%;
+    width: 100%;
+    font-weight: bolder;
+}
+
+.qrcode {
+    position: absolute;
+    top: 85%;
+}

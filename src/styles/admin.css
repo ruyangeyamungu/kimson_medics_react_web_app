@@ -1,0 +1,277 @@
+section {
+    display: flex;
+    box-sizing: border-box;
+    flex-direction: row;
+
+}
+.header {
+    display: flex;
+    border: 1px solid rgba(0, 0, 0, 0.226);
+    background-color: #3305ff23;
+    padding: 10px;
+    gap: 10px;
+
+}
+
+.navLinks, .app-desc {
+    background-color: aliceblue;
+    flex: auto;
+    padding: 10px;
+    text-align: center;
+}
+.navLinks {
+    padding-top: 30px;
+}
+.navButtons {
+    background-color: aliceblue;
+    flex: auto;
+    text-align: center;
+    padding-top: 20px;
+}
+.navButtons button {
+    padding: 10px;
+    margin-left: 7px;
+
+
+}
+.header span, a {
+    margin-left: 10px;
+    text-align: center;
+}
+.app-desc {
+    background-color: hwb(0 100% 0%);
+
+}
+.app-desc >.logo-and-title {
+    color: rgb(0, 0, 255);
+
+}
+.drawer-button {
+    display: none;
+}
+.admin-drawer {
+    display: none;
+}
+
+.links {
+    flex: 20%;
+    /* background-color: #0af5f5; */
+    min-height: 100vh;
+    padding: 10px;
+}
+.contents-1 {
+    flex: 60%;
+    /* background-color: #ff006a; */
+    max-height: 100vh;
+    padding: 10px;
+    overflow-y: scroll;
+}
+.content-2,.items-list-container {
+    flex: 30%;
+    /* background-color: hsl(244, 100%, 50%); */
+    max-height: 100vh;
+    overflow-y: scroll ;
+}
+.staff-list-box {
+    flex: 30%;
+    /* background-color: hsl(244, 100%, 50%); */
+    max-height: 100vh;
+    overflow-y: scroll ;
+}
+.sector {
+    width: 100%;
+    /* height: 200px; */
+    background-color: white;
+    margin-bottom: 10px;
+
+}
+.sector > .registration, .sector > .staff-lists, .sector > .asset-list  {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+}
+.footer {
+    background-color: #000007;
+}
+
+.registration > .asset, .registration > .staff, .reports, .adminCredentials {
+    /* background-color: blue; */
+    flex: 50%;
+    padding: 20px;
+    background-color: hwb(240 97% 2% / 0.938);
+    border: 1px solid #ffffff;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    text-align: center;
+    margin-top: 10px;
+    overflow: hidden;
+}
+
+.staff-lists > .staff, .asset-list > .asset {
+    flex: auto;
+    padding: 20px;
+    background-color: hwb(240 97% 2% / 0.938);
+    border: 1px solid #ffffff;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    text-align: center;
+    margin-top: 10px;
+    overflow: hidden;
+}
+.staff-box {
+    display: flex;
+    flex-direction: right;
+    padding: 20px;
+    background-color: hwb(240 97% 2% / 0.938);
+    border: 1px solid #ffffff;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    text-align: center;
+    margin-top: 10px;
+    overflow: hidden;
+}
+.staff-box > .image {
+    flex: 30%;
+}
+.staff-box > .data {
+    flex: 60%;
+}
+.staff > img {
+    object-fit: cover;
+}
+
+.registration > .asset:hover, .registration > .staff:hover,
+.staff-lists > .staff:hover, .asset-list > .asset:hover {
+    border: 1px solid rgba(0, 0, 0, 0.199);
+}
+.registration > .asset:active, .registration > .staff:active,
+.staff-lists > .staff:active, .asset-list > .asset:active {
+    border: 1px solid #3305ff;
+}
+
+.registration-title, .asset-title{
+    color: rgba(0, 0, 0, 0.24);
+}
+
+
+.sector-top-sales > .asset-sales {
+    padding: 10px;
+    background-color: hwb(240 97% 2% / 0.938);
+    border: 1px solid #ffffff;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
+    text-align: center;
+    margin: 10px;
+    overflow: hidden;
+}
+.asset-sales > table {
+    width: 100%;
+}
+
+.links > table {
+    width: 100%;
+}
+.caption-table {
+    background-color: #3305ff;
+    color: white;
+    padding: 10px;
+    font-weight: bolder;
+}
+
+.report-table {
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+.report-table td, .report-table th {
+border: 1px solid #ddd;
+padding: 8px;
+}
+  
+.report-table tr:nth-child(even){background-color: #f2f2f2;}
+  
+.report-table tr:hover {background-color: #ddd;}
+  
+.report-table th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #04AA6D;
+    color: white;
+}
+
+/*for small screens , phones and small tablets*/
+
+@media (max-width: 800px) {
+    section {
+      flex-direction: column;
+      
+    }
+    .sector > .registration {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .sector > .registration, .sector > .staff-lists, .sector > .asset-list  {    
+        flex-direction: column;   
+    }
+    .contents-1 {
+        max-height: 100% ;
+        
+    }
+    .items-list-container {
+        display: none;
+    }
+    
+  }
+
+  @media (max-width: 1052px) {
+    .navLinks, .navButtons {
+        display: none;
+        
+    }
+    .app-desc {
+        display: inline-flex;
+        gap: 40%;
+    }
+    .app-desc >.logo-and-title {  
+        text-align: center;
+    }
+    .drawer-button {
+        display: block;
+    }
+    
+    .admin-drawer {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        max-width: 70%;
+        /* height: 100%; */
+        background: hsl(0, 19%, 93%);
+        box-shadow: 1px 0px 7px rgba(0, 0, 0, 0.5);
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-out;
+        z-index: 100;
+        overflow-y: scroll; 
+        background-color: hsla(240, 100%, 2%, 0.863);
+        padding-top: 10%;
+    }
+    .form-box >.navButtons {
+        display: block;
+        text-align: center;
+        padding-left: 30%;
+    }
+    .form-box >.navButtons > button{
+        display: block;
+        margin-bottom: 20px;
+    }
+    .form-box a {
+        margin-top: 50px;
+    }
+    .admin-drawer.open {
+        transform: translateX(0);
+      }
+    
+  }
