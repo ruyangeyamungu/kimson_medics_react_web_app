@@ -1,13 +1,13 @@
 import React, {useState, useRef} from "react";
 import { InputNumber } from 'primereact/inputnumber';
 import { useTranslation } from 'react-i18next';
-import {NavBar} from "../../../components/navBar";
 import { useSelector } from "react-redux";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth, staffCol, db, ASSETS_COL } from "../../../App";
 import { getStaffRegNo } from "../../../functions/get_staff_reg_no";
 import { check_existance } from "../../../functions/check_existance";
 import { addDoc, collection, getDocs, where, query } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
 
 export const AssetReg=()=> {
@@ -16,11 +16,11 @@ export const AssetReg=()=> {
     const [errorMsg, setErrorMsg] =useState()
     const [successMsg, setSuccessMsg] =useState()
     const lineRef =useRef()
+    const navigate =useNavigate()
     const regNo = useSelector(state => state.regNo);
     const [assetName, setassetName] =useState(" ")
     const [quantity, setQuantity] = useState()
-    const [bPriceOne, setbPriceOne] =useState(1)
-    const [bPriceAll, setbPriceAll] =useState()
+    const [bPricePerOne, setbPriceOne] =useState()
     const [sPrice, setsPrice] =useState()
     const { t } = useTranslation();
 
@@ -28,8 +28,11 @@ export const AssetReg=()=> {
         event.preventDefault()
         setisError(false);
 
-        if(assetName != null && quantity >= 1 && bPriceAll >=1 && sPrice >=1 ) {
+        if(assetName != null && quantity >= 1 && bPricePerOne >=1 && sPrice >=1 ) {
             setisLoading(true)
+            setErrorMsg('')
+            setisError(false)
+            setSuccessMsg('')
 
             try{
 
@@ -39,49 +42,46 @@ export const AssetReg=()=> {
                  
                 const assetNames = await getDocs(q);
 
-                console.log(assetNames);
-
                 if(assetNames.empty) {
 
-                onAuthStateChanged(auth, async user =>{
-                    // gets user eg no using its account it
-                    const regNo =await getStaffRegNo(user.uid)
-                    const isStaff = await check_existance(staffCol, regNo.toUpperCase().trim())
-                    if(isStaff) {
-    
-                       const assetData = {
-                            "name": assetName.toUpperCase(),
-                             "sPrice": sPrice,
-                             "totalBprice": bPriceAll,
-                             "PerOneBprice": bPriceOne,
-                             "dateRegistered": new Date(),
-                             "staffRegistered": regNo,
-                             "quantity": quantity
-                       } 
-    
-                       // add asset
-                        await addDoc(collection(db, 'ASSETS'), assetData)
-                        .then(() =>{
-                            setisError(true)
-                            setSuccessMsg ("successfully registered")
-                            lineRef.current.scrollIntoView({ behavior: "smooth" });
-    
-                            setassetName('')
-                            setQuantity()
-                            setbPriceOne()
-                            setbPriceAll()
-                            setbPriceOne()
-                            setsPrice()
+                    onAuthStateChanged(auth, async user =>{
+                        // gets user eg no using its account it
+                        const regNo =await getStaffRegNo(user.uid)
+                        const isStaff = await check_existance(staffCol, regNo.toUpperCase().trim())
+                        if(isStaff) {
+        
+                        const assetData = {
+                                "name": assetName.toUpperCase(),
+                                "sPrice": sPrice,
+                                "bPricePerOne": bPricePerOne,
+                                "dateRegistered": new Date(),
+                                "staffRegistered": regNo,
+                                "quantity": quantity,
+                                
+                        } 
+        
+                        // add asset
+                            await addDoc(collection(db, 'ASSETS'), assetData)
+                            .then(() =>{
+                                setisError(true)
+                                setSuccessMsg ("successfully registered")
+                                lineRef.current.scrollIntoView({ behavior: "smooth" });
+        
+                                setassetName('')
+                                setQuantity()
+                                setbPriceOne()
+                                setbPriceOne()
+                                setsPrice()
+                                setisLoading(false)
+                            })
+                        } else {
                             setisLoading(false)
+                            setisError(true)
+                            setErrorMsg ("faid to recorginize your staff, try to log out and back login")
+                            lineRef.current.scrollIntoView({ behavior: "smooth" });
+                        }
+        
                         })
-                    } else {
-                        setisLoading(false)
-                        setisError(true)
-                        setErrorMsg ("faid to recorginize your staff, try to log out and back login")
-                        lineRef.current.scrollIntoView({ behavior: "smooth" });
-                    }
-    
-                    })
                     
                 }else{
                     
@@ -109,9 +109,9 @@ export const AssetReg=()=> {
                 setErrorMsg("quantity must be greater than 0")
                 lineRef.current.scrollIntoView({ behavior: "smooth" });
             }
-            if(bPriceAll < 1) {
+            if(bPricePerOne < 1) {
                 setisError(true)
-                setErrorMsg("all buying price must be greater than 0")
+                setErrorMsg("buying price must be greater than 0")
                 lineRef.current.scrollIntoView({ behavior: "smooth" });
             }
             if(sPrice < 1) {
@@ -119,15 +119,14 @@ export const AssetReg=()=> {
                 setErrorMsg("selling price must be greater than 0")
                 lineRef.current.scrollIntoView({ behavior: "smooth" });
             }
-            if(bPriceOne < 1 && bPriceOne !== null) {
-                setisError(true)
-                setErrorMsg("buying price  per one must be greater than 0 or empty")
-                lineRef.current.scrollIntoView({ behavior: "smooth" });
-            }
+        }
 
+    if(regNo===null) {
+        signOut(auth)
+        .then(()=> {
+            navigate('/')
+        })
     }
-
-
     function hideErrorBox() {
         setisError(false)
     }
@@ -147,12 +146,8 @@ export const AssetReg=()=> {
                     <InputNumber  style={{paddingBottom: "10px"}} value={quantity} onValueChange={(e)=>setQuantity(e.value)} min={0} required/>
 
                     <label for="bprice">buying price @1 Qt</label>
-                    <InputNumber  style={{paddingBottom: "10px"}}  value={bPriceOne} onValueChange={(e)=>setbPriceOne(e.value)} min={0} /><br />
-                    <span style={{color: "green"}}>you can leave this part, a set buying price for @all Qts</span>
-
-                    <label for="bprice">buying price @all Qts</label>
-                    <InputNumber  style={{paddingBottom: "10px"}} value={bPriceAll} max={bPriceOne*quantity} onValueChange={(e)=>setbPriceAll(e.value)}  min={0} required />
-
+                    <InputNumber  style={{paddingBottom: "10px"}}  value={bPricePerOne} onValueChange={(e)=>setbPriceOne(e.value)} min={0} required/><br />
+                  
                     <label for="bprice">selling price @1 </label>
                     <InputNumber  style={{paddingBottom: "10px"}} value={sPrice} onValueChange={(e) =>{setsPrice(e.value)}} min={0} required />
 
@@ -160,7 +155,7 @@ export const AssetReg=()=> {
                         isLoading?
                         <div className="loader" id="loader"></div>
                         :
-                        <input type="submit"  className="submit-buttons" value="SIGN UP" />
+                        <input type="submit"  className="submit-buttons" value="REGISTER" />
                     }
                     
                 {

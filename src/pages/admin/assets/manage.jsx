@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { AssetList } from "./components/assetList";
 import AssetHeader from "./components/headerComponent";
 import { SelectedAsset } from "./components/selectedAsset";
-import { onSnapshot, query, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { onSnapshot, query, doc, updateDoc, collection, deleteDoc } from "firebase/firestore";
 import { db, ASSETS_COL, staffCol, auth } from "../../../App";
 import { check_existance } from "../../../functions/check_existance";
 import { update_field } from "../../../functions/update_field";
@@ -14,6 +14,8 @@ import { onAuthStateChanged } from "firebase/auth";
 import { getStaffRegNo } from "../../../functions/get_staff_reg_no";
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import "../../../styles/loaders.css"
+import moment from "moment";
+import { get_doc_data } from "../../../functions/get_doc_data";
 
 const ManageAsset =() => {
     const [isLoading, setisLoading] =useState(false)
@@ -23,9 +25,10 @@ const ManageAsset =() => {
     const lineRef =useRef()
     const regNo = useSelector(state => state.regNo);
     const [assetName, setassetName] =useState("")
+    const [initialAssetName, setInitialAssetName] =useState("")
     const [quantity, setQuantity] = useState()
-    const [bPriceOne, setbPriceOne] =useState(1)
-    const [bPriceAll, setbPriceAll] =useState()
+    const [bPricePerOne, setbPricePerOne] =useState()
+  
     const [sPrice, setsPrice] =useState()
     const { t } = useTranslation()
     const [loader, setLoader] =useState(true)
@@ -43,10 +46,10 @@ const ManageAsset =() => {
         const unsubscribe = onSnapshot(assetRef, (asset) => {
           if (asset.exists()) {
             setassetName(asset.data()['name']);
+            setInitialAssetName(asset.data()['name']);
             setQuantity(asset.data()['quantity']);
             setsPrice(asset.data()['sPrice'])
-            // setbPriceOne(asset.data()['bPrice'])
-            // setbPriceAll(asse.data()[''])
+            setbPricePerOne(asset.data()['bPricePerOne'])
             setLoader(false)
            
           } else {
@@ -62,8 +65,21 @@ const ManageAsset =() => {
         event.preventDefault()
         setisError(false);
 
-        if(assetName != null && quantity >= 1 && bPriceAll >=1 && sPrice >=1 ) {
+        if(assetName != null && quantity >= 1 && bPricePerOne >=1 && sPrice >=1 ) {
             setisLoading(true)
+
+        //    const assetData = await get_doc_data(ASSETS_COL, ID)
+
+        // //    console.log(assetData['name']);
+        // //    console.log(initialAssetName);
+
+        // //    if(assetData['name'].toUpperCase() === assetName.toUpperCase() ) {
+        // //         if(assetName.toUpperCase ===initialAssetName.toUpperCase()) {
+
+        // //         }
+
+        //    } 
+            
 
             try{
 
@@ -81,10 +97,10 @@ const ManageAsset =() => {
                        const assetData = {
                             "name": assetName.toUpperCase(),
                              "sPrice": sPrice,
-                             "totalBprice": bPriceAll,
-                             "PerOneBprice": bPriceOne,
-                             "lastUpdateDate": new Date(),
-                             "lastStaffUpdate": regNo,
+                             "totalBprice": bPricePerOne*quantity,
+                             "bPricePerOne": bPricePerOne,
+                             "lastDateUpdated": moment(new Date()).format('DD-MM-YYYY HH:MM:ss'),
+                             "lastStaffUpdated": regNo,
                              "quantity": quantity
                        } 
     
@@ -132,7 +148,7 @@ const ManageAsset =() => {
                 setErrorMsg("quantity must be greater than 0")
                 lineRef.current.scrollIntoView({ behavior: "smooth" });
             }
-            if(bPriceAll < 1) {
+            if(bPricePerOne < 1) {
                 setisError(true)
                 setErrorMsg("all buying price must be greater than 0")
                 lineRef.current.scrollIntoView({ behavior: "smooth" });
@@ -142,13 +158,9 @@ const ManageAsset =() => {
                 setErrorMsg("selling price must be greater than 0")
                 lineRef.current.scrollIntoView({ behavior: "smooth" });
             }
-            if(bPriceOne < 1 && bPriceOne !== null) {
-                setisError(true)
-                setErrorMsg("buying price  per one must be greater than 0 or empty")
-                lineRef.current.scrollIntoView({ behavior: "smooth" });
-            }
+        }
+        
 
-    }
 
     async function deleteAsset( ) {
         try {
@@ -206,11 +218,8 @@ const ManageAsset =() => {
                         <InputNumber  style={{paddingBottom: "10px"}} value={quantity} onValueChange={(e)=>setQuantity(e.value)} min={0} required/>
 
                         <label for="bprice">buying price @1 Qt</label>
-                        <InputNumber  style={{paddingBottom: "10px"}}  value={bPriceOne} onValueChange={(e)=>setbPriceOne(e.value)} min={0} /><br />
-                        <span style={{color: "green"}}>you can leave this part, a set buying price for @all Qts</span>
-
-                        <label for="bprice">buying price @all Qts</label>
-                        <InputNumber  style={{paddingBottom: "10px"}} value={bPriceAll} max={bPriceOne*quantity} onValueChange={(e)=>setbPriceAll(e.value)}  min={0} required />
+                        <InputNumber  style={{paddingBottom: "10px"}}  value={bPricePerOne} onValueChange={(e)=>setbPricePerOne(e.value)} min={0}  required/><br />
+                       
 
                         <label for="bprice">selling price @1 </label>
                         <InputNumber  style={{paddingBottom: "10px"}} value={sPrice} onValueChange={(e) =>{setsPrice(e.value)}} min={0} required />

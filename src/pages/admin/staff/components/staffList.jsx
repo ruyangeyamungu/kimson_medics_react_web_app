@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react"
 import { collection,onSnapshot, query, startAt,where,endAt,orderBy } from "firebase/firestore";
 import { db, staffCol } from "../../../../App";
+import { useNavigate } from "react-router-dom";
 
 export const StaffList=() =>{
     const[staffList, setStaffList] =useState([])
     const[queryText, setQueryText] =useState("")
+    const navigate =useNavigate()
 
     useEffect(() => {
         
@@ -41,7 +43,10 @@ export const StaffList=() =>{
       return () => unsubscribe();
     }, [queryText]);
 
-    
+    function toStaffData(regNo) {
+      navigate('/staff-det?id='+ encodeURIComponent(regNo))
+      window.location.reload()
+    }
 
     return(
         <>
@@ -52,7 +57,7 @@ export const StaffList=() =>{
 
         {
             staffList.map(staff=> (
-            <div className="staff-box">
+            <div className="staff-box" onClick={()=>toStaffData(staff.id)}>
             <div className="image" >
                 <img src={staff['staffImage']} width="100px" alt="profile" style={{borderRadius: "20px"}} />
             </div>

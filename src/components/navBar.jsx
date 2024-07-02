@@ -1,16 +1,18 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { signOut } from "firebase/auth";
-import { auth } from "../App";
+import { auth, staffCol, db } from "../App";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {  faBars, faClose, faDoorOpen, faFlag,  faSearch } from "@fortawesome/free-solid-svg-icons";
 import { StaffIDAndNames } from "../components/StaffRegNoAndNames";
 import { useTranslation } from 'react-i18next';
 import logo  from "../assets/images/logo.png";
+import { useSelector } from "react-redux";
+import { doc, query, onSnapshot } from "firebase/firestore";
 
 
         
-export function NavBar({onSearch, Hcolor, Pcolor, Scolor, sTcolor}) {
+export function NavBar({onSearch, Hcolor, Pcolor, Scolor, sTcolor, aColor}) {
 
     const [open, setOpen] = useState(false);
     const [Popen, setPopen] = useState(false);
@@ -18,7 +20,27 @@ export function NavBar({onSearch, Hcolor, Pcolor, Scolor, sTcolor}) {
     const [isLogingOut, setLogingOut] =useState(false)
     const { t, i18n } = useTranslation();
     const navigate =useNavigate()
+    const regNo = useSelector(state => state.regNo);
+    const staffNames = useSelector(state => state.names);
+    const [isAdmin, setIsAdmin] =useState(false)
 
+    useEffect(() => {
+        // Reference to the specific document
+        const staffRef = doc(db, staffCol, regNo);
+
+        // Listen for real-time updates
+        const unsubscribe = onSnapshot(staffRef, (staff) => {
+          if (staff.data()['accType'] === 'admin') {
+            setIsAdmin(true)
+        
+          } else {
+             setIsAdmin(false)
+          }
+        });
+    
+        // Cleanup subscription on unmount
+        return () => unsubscribe();
+      }, []);
     const handleSearch =(e) => {
        onSearch(e.target.value)
     }
@@ -34,38 +56,38 @@ export function NavBar({onSearch, Hcolor, Pcolor, Scolor, sTcolor}) {
          setOpen(!open)
     }
 
-    function togglePrivateInfoMenu() {
-        setPopen(!Popen)
-   }
-
    function toggleSearch() {
     setIsSearch(!isSearch)
     onSearch("")
     
    }
 
-   const changeLanguage = (lng) => {
-    i18n.changeLanguage(lng);
-  };
+    const changeLanguage = (lng) => {
+        i18n.changeLanguage(lng);
+    };
 
-  function toAssetReg() {
-    navigate("/assetReg")
-    
-  }
-  function toHomeReg() {
-    navigate("/home")
-  }
-  function toStaffReport() {
-    navigate("/staff-report")
-  }
-  function toStock() {
-    navigate("/stock")
-  }
+    function toAssetReg() {
+        navigate("/assetReg")
+        
+    }
+    function toHomeReg() {
+        navigate("/home")
+    }
+    function toStaffReport() {
+        navigate("/staff-report")
+    }
+    function toStock() {
+        navigate("/stock")
+    }
 
+    function toAdmin() {
+        navigate("/admin")
+    }
 
-  function toAdmin() {
-    navigate("/admin")
-  }
+    function toStockRegister() {
+        navigate('/register')
+    }
+
 
     return(
         <>
@@ -79,21 +101,31 @@ export function NavBar({onSearch, Hcolor, Pcolor, Scolor, sTcolor}) {
 
             {/* for larger screens */}
             <div className="app-logo">
-                <img src={logo} alt="logo" style={{maxWidth: "100%"}} />
+                <img src={logo} alt="logo" style={{maxWidth: "80%"}} />
             </div>
             <div className="app-title">
-                <h5>{t('appTitle')}</h5>
+                <h5 style={{color: "blue"}}>{t('appTitle')}</h5>
             </div>
             <div className="nav-links">
                 <a onClick={toHomeReg} style={{color: Hcolor}}>{t('home')}</a>
                 <a onClick={toStaffReport} style={{color: Pcolor}}>{t('privateInfo')}</a>
                 <a onClick={toStock} style={{color: Scolor}}>{t('stock')}</a>
-                <a style={{color: sTcolor}}>{t('settings')}</a>
-                <a onClick={toAdmin} >{t('adminSection')}</a>
+                {/* <a style={{color: sTcolor}}>{t('settings')}</a> */}
+                <a style={{color: aColor}}  onClick={toStockRegister}>{t('asset').toUpperCase()}</a>
+
+                {
+                    isAdmin?
+                    <a onClick={toAdmin} >{t('adminSection')}</a>
+                    :
+                    <p></p>
+                }
+                
             </div>
+            {/* <StaffIDAndNames /> */}
             <div className="staff-details">
-                <h5>RUYANGE YAMUNGU MUSTAFA</h5>
-                <p>KMS3460</p>
+               
+                <h5>{staffNames}</h5>
+                <h4 style={{color: "blue"}}>{regNo}</h4> 
                 
             </div>
  
@@ -147,31 +179,21 @@ export function NavBar({onSearch, Hcolor, Pcolor, Scolor, sTcolor}) {
                     <hr style={{marginBottom: "10px"}}/>
                     <b><li onClick={toStaffReport} style={{color: Pcolor}}>{t('privateInfo')}</li></b>
                     <hr style={{marginBottom: "10px"}}/>
-                      {/* <ul className={`sub-menus ${Popen ? 'p-open' : ''}`}>
-                        <li onClick={toStaffReport}>{t('all')}</li>
-                        <li>{t('asset')}</li>
-                        <li>{t('date')}</li>
-                      </ul> */}
-
                     <b><li onClick={toStock} style={{color: Scolor}}>{t('stock')}</li></b>
                     <hr style={{marginBottom: "10px"}}/>
-                    <b><li>{t('settings')}</li></b>
+                    {/* <b><li>{t('settings')}</li></b> */}
+                    <b><li onClick={toStockRegister} style={{color: aColor}}>{t('asset').toUpperCase()}</li></b>
                 </ul>
             </div>
-            <div className="form-box  admin-staff">
-                <h2>{t('adminSection')}</h2>
-                <hr />
-                <ul>
-                    <li>{t('registration')}</li>
-                        <ul>
-                            <li >{t('staff').toLowerCase()}</li>
-                            <li onClick={toAssetReg} >{t('asset')}</li>    
-                        </ul>
-                    <li>{t('stock')}</li>
-                    <li>{t('staff').toUpperCase()}</li>
-                    <li>{t('pharmacyReport')}</li>
-                </ul>
-            </div>
+             {
+                isAdmin?
+                <div className="form-box  admin-staff">
+                    <strong><a onClick={toAdmin} >{t('adminSection')}</a></strong>
+                </div>
+                :
+                <p></p>
+             }
+
             </div>
         </>
 

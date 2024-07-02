@@ -17,6 +17,11 @@ const AssetDetails=() => {
     const[bPricePerOne, sBPricePerOne] =useState()
     const[bPricePerAll, setbPricePerAll] =useState()
     const[registeredDate, setRegisteredDate] =useState()
+    const [lastStaffUpdated, setLastStaffUpdated] =useState('')
+    const [lastDateUpdated, setLastDateUpdated] = useState('')
+    const[lastAddedQuantity, setLastAddedQuantity] =useState(0)
+    const[lastStaffAddedQuantity, setLastStaffAddedQuantity] =useState('')
+    const[lastDateAddedQuantity, setLastDateAddedQuantity] =useState('')
     const [registrar, setRegistrar] =useState()
     const [loading, setLoading] =useState(true)
     
@@ -32,6 +37,12 @@ const AssetDetails=() => {
             setSprice(asset['sPrice'])
             setRegisteredDate(asset['dateRegistered'])
             setRegistrar(asset['staffRegistered'])
+            setLastAddedQuantity(asset['lastAddedQuantity'])
+            setLastDateAddedQuantity(asset['lastDateAddedQuantity'])
+            setLastStaffAddedQuantity(asset['lastStaffAddedQuantity'])
+            setLastStaffUpdated(asset['lastStaffUpdated'])
+            setLastDateUpdated(asset['lastDateUpdated'])
+            
             setLoading(false)
         })
     },[])
@@ -64,11 +75,27 @@ const AssetDetails=() => {
                     <p>{sPrice.toLocaleString()} tsh</p>
                     <br />
                     <h2>date registered</h2>
-                    <p>{moment(registeredDate.toDate()).format("DD-MM-YYY h:mm:ss a")}</p>
+                    <p>{moment(registeredDate.toDate()).format("DD-MM-YYY HH:MM:ss")}</p>
                     <br />
                     <h2>staff registered</h2>
                     <p>{registrar}</p>
                     <br />
+                    <h2>last added quantity</h2>
+                    <p>{lastAddedQuantity===undefined?' ':lastAddedQuantity.toLocaleString()}</p>
+                    <br />
+                    <h2>last date added quantity</h2>
+                    <p>{lastDateAddedQuantity}</p>
+                    <br />
+                    <h2>last staff added quantity</h2>
+                    <p>{lastStaffAddedQuantity}</p>
+                    <br />
+                    <h2>last date added updated</h2>
+                    <p>{lastDateUpdated}</p>
+                    <br />
+                    <h2>last staff updated</h2>
+                    <p>{lastStaffUpdated}</p>
+                    <br />
+                    
                     <h2>id</h2>
                     <p style={{color: "red"}}>{ID}</p>
                     
@@ -80,9 +107,6 @@ const AssetDetails=() => {
                 <AssetList  />
             </div>
         </section>
-        <div className="footer">
-            ikjiuunk
-        </div>
         </>
     )
 }

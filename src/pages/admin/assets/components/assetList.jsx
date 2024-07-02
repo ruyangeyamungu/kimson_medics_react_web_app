@@ -54,15 +54,14 @@ export const AssetList=() =>{
          placeholder="search here...." />
         {
             assetList.map(asset=> (
-            <div className="staff-box" >
-            <div className="data" onClick={()=>toAssetData(asset.id)} >
-                <h4>{asset['name']}</h4>
-                <br />
-                <p>{asset['quantity'].toLocaleString()}</p>
-                <br />
-                <p>id: <span style={{color: "red"}}>{asset.id}</span></p>
-
-            </div>
+            <div className="asset-box" >
+              <div className="data" onClick={()=>toAssetData(asset.id)} >
+                  <h4>{asset['name']}</h4>
+                  <br />
+                  <p>{asset['quantity'].toLocaleString()}</p>
+                  <br />
+                  <p>id: <span style={{color: "red"}}>{asset.id}</span></p>
+              </div>
             </div>
             ))
     }

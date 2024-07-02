@@ -37,10 +37,13 @@ const Staff =()=>{
     const [succesMessage, setSuccessMessage] =useState('')
     const [errorMessage, setErrorMessage] =useState('')
     const [loader, setLoader] =useState(true)
+    const staffNames = useSelector(state => state.names);
 
-    const [fname, setfname] =useState()
+    const [fname, setfname] =useState('')
     const [mname, setmname] =useState('')
-    const [lname, setlname] =useState()
+    const [lname, setlname] =useState('')
+    const [accountType, setAccountType] = useState('notAdmin');
+    
 
     useEffect(() => {
           
@@ -61,8 +64,6 @@ const Staff =()=>{
     return () => unsubscribe();
   }, []);
 
-    
-
     async function registerStaff(event) {
         event.preventDefault();
 
@@ -76,7 +77,7 @@ const Staff =()=>{
               // create reg no.
               const regNo =  "KMS"+Math.floor(Math.random() * 9000);
               const isregNoExists = await check_existance(staffCol, regNo) 
-              if(isregNoExists) return
+            //  if(isregNoExists) return
                   if(validateTextInput(fname)===true && validateTextInput(mname) ===true &&
                    validateTextInput(lname)===true  && adminRegNo !== null && adminRegNo !== undefined && adminRegNo !== '',
                     certificateDownloadingUrl !==null && staffImageDownloadingUrl !==null) {
@@ -88,25 +89,26 @@ const Staff =()=>{
                           'certificate': certificateDownloadingUrl,
                           'dateRegistered': Date(),
                           'email': null,
-                          'isAdmin': true,
+                          'accType': accountType,
                           'adminRegNo': regNo,
-                          'adminName': 'MUSA',
+                          'adminName': staffNames,
                           'accountID':null,
                           "staffID": regNo
                         }
                         try {
                           await setDoc(doc(db, 'STAFF', regNo), staffData)
                           setSuccessMessage('registered successfully. Reg No:  '+regNo)
-                          // setfname()
-                          // setmname('')
-                          // setlname()
-                          // setCertificateFile()
-                          // setStaffImageFile()
-                          // setCertificateDownloadingUrl(null)
-                          // setStaffImageDownloadingUrl(null)
-                          // setPreviewStaffImage(null)
-                          // setPreview(null)
+                          setfname('')
+                          setmname('')
+                          setlname('')
+                          setCertificateFile()
+                          setStaffImageFile()
+                          setCertificateDownloadingUrl(null)
+                          setStaffImageDownloadingUrl(null)
+                          setPreviewStaffImage(null)
+                          setPreview(null)
                           setIsloadingToRegister(false)
+
                         }catch(error) {
                           setErrorMessage('something went wrong try, again or refresh page');
                           setIsloadingToRegister(false)
@@ -122,17 +124,17 @@ const Staff =()=>{
         }
 
 
-        if(validateTextInput(fname.trim())===false) {
-            setErrorMessage('incorrect first name, name should only have a-z,A-Z letters');
-            setIsloadingToRegister(false)
+        // if(validateTextInput(fname.trim())===false) {
+        //     setErrorMessage('incorrect first name, name should only have a-z,A-Z letters');
+        //     setIsloadingToRegister(false)
             
-        }
-        if(validateTextInput(mname.trim())===false) {
-          setErrorMessage('incorrect middle name, name should only have a-z,A-Z letters');
-        }
-        if(validateTextInput(lname.trim())=== false) {
-          setErrorMessage('incorrect last name, name should only have a-z,A-Z letters');
-        }
+        // }
+        // if(validateTextInput(mname.trim())===false) {
+        //   setErrorMessage('incorrect middle name, name should only have a-z,A-Z letters');
+        // }
+        // if(validateTextInput(lname.trim())=== false) {
+        //   setErrorMessage('incorrect last name, name should only have a-z,A-Z letters');
+        // }
 
         if(certificateDownloadingUrl===null) {
         setErrorMessage('attach and upload certififcate first');
@@ -254,8 +256,7 @@ const Staff =()=>{
       };
 
       function validateTextInput(inputText) {
-        // Regular expression pattern to match only letters (uppercase and lowercase) and optional whitespace characters
-        var pattern = /^[a-z]+$/i;
+        var pattern = /^[A-Za-z]*$/;
         return pattern.test(inputText);
     }
 
@@ -282,11 +283,11 @@ const Staff =()=>{
                 <form onSubmit={registerStaff}>
                 <div className="form-box personal-info">
                     <label for='fname' >first name</label>
-                    <input type="text" name="fname" onChange={(e)=>setfname(e.target.value)} maxLength={20} required />
+                    <input type="text" name="fname" value={fname} onChange={(e)=>setfname(e.target.value)} maxLength={20} required />
                     <label for='mname' >middle name</label>
-                    <input type="text" name="mname" onChange={(e)=>setmname(e.target.value)} maxLength={20}  />
+                    <input type="text" name="mname" value={mname} onChange={(e)=>setmname(e.target.value)} maxLength={20}  />
                     <label for='lname' >last name</label>
-                    <input type="text" name="lname" onChange={(e)=>setlname(e.target.value)} maxLength={20} required />
+                    <input type="text" name="lname" value={lname} onChange={(e)=>setlname(e.target.value)} maxLength={20} required />
                 </div>
 
                 <div className="form-box attachment">
@@ -337,10 +338,10 @@ const Staff =()=>{
                    
                 </div>
                 <div className="form-box accounts">
+                    <label> NOT ADMIN</label>
+                    <input type="radio" name="admin" value='notAdmin'  onChange={(e)=>setAccountType(e.target.value)} defaultChecked/>
                     <label>ADMIN</label>
-                    <input type="radio" name="admin" />
-                    <label>NOT ADMIN</label>
-                    <input type="radio" name="admin" checked/>
+                    <input type="radio" name="admin" value= 'admin'  onChange={(e)=>setAccountType(e.target.value)} />
                 </div>
                 <div className="form-box ">
                   {
@@ -354,12 +355,6 @@ const Staff =()=>{
                     <input type="submit" className="submit-buttons"  value="REGISTER" />
                   }
                   <h4 style={{color: 'green'}}><strong>{succesMessage}</strong></h4>
-                  {
-                    (setSuccessMessage!=='')?
-                    <Button>REFRESH</Button>
-                    :
-                    <p></p>
-                  }
 
                   <p style={{color: 'red'}}><b>{errorMessage}</b></p>
                 
@@ -379,5 +374,3 @@ const Staff =()=>{
 }
 
 export default Staff
-
-

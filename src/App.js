@@ -20,4 +20,4 @@ export const storage =getStorage(app)
 export const staffCol ="STAFF"
 export const ASSETS_COL ="ASSETS"
 export const SALES_COL ="SALES"
-export const SALES_STASTICS_COL ="SALES_STASTICS"
+export const SALES_STASTICS_COL ="SALES_STATISTICS"

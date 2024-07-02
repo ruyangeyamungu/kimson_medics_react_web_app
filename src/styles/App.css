@@ -5,9 +5,7 @@
 body,html {
     background-color: white;
     margin: 0;
-    /* display: flex; */
-    /* justify-content: center;
-    align-items: center; */
+
 
 }
 .submit-buttons {
@@ -47,6 +45,7 @@ body,html {
     z-index: 2;
     top: 0;
     background-color: white;
+    
 }
 .lang-box{
     flex: 50%;
@@ -64,11 +63,6 @@ body,html {
 }
 
 .drawer {
-    /* border: 1px solid blue;
-    padding: 10px;
-    background-color: brown;
-    height: 100%;
-    width: 50%; */
     position: fixed;
     top: 0;
     left: 0;
@@ -139,7 +133,26 @@ ul li {
 .staff-details {
     display: none;
 }
-/* nav bar styles on tables*/
+.sales-receipt {
+    display: none;
+}
+@media print {
+    .sales-receipt {
+      display: block;
+    }
+}
+
+.section {
+    padding: 0px 10px;
+    position: absolute;
+    top: 5vh;
+    width: 100%;
+    justify-content: center;
+    /* margin-left: 15%; */
+}
+
+
+/* nav bar styles on larger screens*/
 @media only screen and (min-width:1020px) {
     .drawer {
         display: none;
@@ -180,7 +193,7 @@ ul li {
     .section {
         padding: 0px 10px;
         position: absolute;
-        top: 7vmax;
+        top: 20vh;
         width: 70%;
         justify-content: center;
         margin-left: 15%;

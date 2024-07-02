@@ -1,13 +1,23 @@
 import "./styles/App.css"
-import { onAuthStateChanged } from "firebase/auth"
+import { onAuthStateChanged, signOut } from "firebase/auth"
 import React from "react"
 import { auth, staffCol } from "./App";
 import { useNavigate } from "react-router-dom";
 import logo from "../src/assets/images/logo.png"
+import { useSelector } from "react-redux";
+
 
 
 const AppInit =  ()=>{
     const navigate =useNavigate()
+    const regNo = useSelector(state => state.regNo);
+
+    
+
+    if(regNo === null) {
+        signOut(auth)
+    }
+
 
     function checkAuthStatus() {
         onAuthStateChanged(auth,user =>{
@@ -20,6 +30,7 @@ const AppInit =  ()=>{
     }
     
     setTimeout(checkAuthStatus, 3000)
+
 
     return(
         <div className="logo-box"> 

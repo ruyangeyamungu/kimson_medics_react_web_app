@@ -7,9 +7,8 @@ import { staffCol} from "../../../../App"
 
 
 export const SelectedStaff= ({selectedID}) => {
-   const [name, setName] =useState()
+   const [name, setName] =useState('')
    const [pictureUrl, setPictureUrl] =useState()
-
 
     useEffect(()=>{
         get_doc_data(staffCol,selectedID)
@@ -26,9 +25,9 @@ export const SelectedStaff= ({selectedID}) => {
             <img src={pictureUrl}  alt="profile" style={{ maxWidth: '300px', marginTop: '10px' }} />
         </div>
         <div className="data">
-            <h3>{selectedID}</h3>
+            <h3 style={{color:"blue"}}>{selectedID}</h3>
             <br />
-            <p>{name}</p>
+            <p><strong>{name.toUpperCase()}</strong></p>
 
         </div>
         </div>

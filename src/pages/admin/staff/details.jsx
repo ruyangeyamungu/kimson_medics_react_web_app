@@ -13,6 +13,7 @@ const Details=() => {
     const[mname, setmname] =useState()
     const[date, setDate] =useState()
     const[admin, setAdmin] =useState()
+    const[adminName, setAdminName] =useState()
     const[regNo, setRegNo] =useState()
     const[pictureUrl, setPictureUrl] =useState()
     const [certificateUrl, setCertificateUrl] =useState()
@@ -29,6 +30,7 @@ const Details=() => {
             setlname(staff['lname'])
             setDate(staff['dateRegistered'])
             setAdmin(staff['adminRegNo'])
+            setAdminName(staff['adminName'])
             setPictureUrl(staff['staffImage'])
             setCertificateUrl(staff['certificate'])
             if(staff['isAdmin']===true) {
@@ -74,8 +76,9 @@ const Details=() => {
                     <br />
                     <h4>REGISTERED BY no: </h4>
                     <p>{admin}</p>
+                    <br />
                     <h4>REGISTERED BY name: </h4>
-                    <b><p>----------------</p></b>
+                    <p>{adminName}</p>
                 </div>
                 <div className="form-box">
                    
@@ -92,7 +95,7 @@ const Details=() => {
                </div>
                <div className="form-box">
                    
-                   <h4>{accType}</h4>
+                   <h4 style={{color: "red"}}>{accType}</h4>
 
                </div>
             </div>

@@ -2,8 +2,10 @@
 import React from 'react';
 import logo from "../assets/images/logo.png";
 import "../styles/receipts.css"
+import qrCode from "../assets/images/qrcode.png";
 
-const PrintableComponent = () => {
+const PrintableComponent = (props) => {
+
   return (
     <div className='printable-page'>
       {/* --header--*/}
@@ -15,6 +17,7 @@ const PrintableComponent = () => {
           <address>
             <h1>KIMSON MEDICS PHARMACY</h1>
             <h3>P.O BOX 3018 BUGURUNI, DAR ES SALAA TANZANIA</h3>
+            <p>mobile: 0757-001-100 /0783 827 293</p>
           </address>
 
         </div>
@@ -30,23 +33,23 @@ const PrintableComponent = () => {
             <caption>MEDICAL INFO</caption>
             <tr>
               <th>name: </th>
-              <td>MEDAZON</td>
+              <td>{props.name}</td>
             </tr>
             <tr>
               <th>id: </th>
-              <td>JIFJKVBFNKDGVBDFHGFDOIGVBFD9W</td>
+              <td>{props.id}</td>
             </tr>
             <tr>
               <th>qauntity: </th>
-              <td>10</td>
+              <td>{props.quantity}</td>
             </tr>
             <tr>
               <th>price per each: </th>
-              <td>3,000</td>
+              <td>{props.pricePerEach}</td>
             </tr>
             <tr>
               <th>total price: </th>
-              <td>30,000</td>
+              <td>{eval(props.pricePerEach*props.quantity)}</td>
             </tr>
             <tr>
               <th>date: </th>
@@ -58,11 +61,11 @@ const PrintableComponent = () => {
             <caption>PHARMACIST /DOCTOR INFO</caption>
             <tr>
               <th>name: </th>
-              <td>RUYANGE YAMUNGU MUSTAFA</td>
+              <td>{props.staffName}</td>
             </tr>
             <tr>
               <th>registered no: </th>
-              <td>KMS3460</td>
+              <td>{props.staffID}</td>
             </tr>
           </table>
           <h3>DESCRIPTION:</h3>
@@ -70,13 +73,14 @@ const PrintableComponent = () => {
           <h5 style={{marginTop: '200px'}}>SIGNATURE:.....................................</h5>
       </div>
 
-      <img className='qrcode' src={logo} alt='qrcode' width='80px'/>
+      <img className='qrcode' src={qrCode} alt='qrcode' width='80px'/>
 
       {/* footer */}
 
       <div className='footer' >
         <br />
         <p>welcome to kimson medics. All rights are reserved</p>
+        
       </div>
       
     </div>

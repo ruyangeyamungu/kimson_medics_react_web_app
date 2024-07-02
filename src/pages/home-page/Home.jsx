@@ -4,7 +4,7 @@ import { faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 import { InputNumber } from 'primereact/inputnumber';
 import { useTranslation } from 'react-i18next';
 import {NavBar} from "../../components/navBar";
-import { db, ASSETS_COL, SALES_COL, SALES_STASTICS_COL } from "../../App";
+import { db, ASSETS_COL, SALES_COL, SALES_STASTICS_COL, staffCol } from "../../App";
 import { doc,setDoc, collection, addDoc, onSnapshot, where, query, orderBy, startAt, endAt } from "firebase/firestore";
 import { update_field } from "../../functions/update_field";
 import { get_doc_data } from "../../functions/get_doc_data";
@@ -14,6 +14,9 @@ import Loader from "../../loader/Loader";
 import { check_existance } from "../../functions/check_existance";
 import { useReactToPrint } from 'react-to-print';
 import PrintableComponent from "../../printableReceipt/salesReceipt";
+import "../../styles/App.css"
+import "../../styles/Forms.css"
+import {  useNavigate} from "react-router-dom";
 
 export default function Home() {
 
@@ -26,16 +29,38 @@ export default function Home() {
     const [loading, setLoading] = useState(true);
     const[Salesquantity, setSalesQuantity] =useState()
     const regNo = useSelector(state => state.regNo);
+    const staffNames = useSelector(state => state.names);
     const [isLoading, setisLoading] = useState(false)
     const [successMsg, setSuccessMsg] = useState()
     const [errorMsg, seterrorMsg] = useState()
     const [queryText, setQueryText] = useState("");
-    const componentRef = useRef();
+    const salesReceiptRef = useRef();
     const[printReceipt, setPrintReceipt] = useState(false)
+    const [isAdmin, setIsAdmin] =useState(false)
+    const navigate =useNavigate()
 
     const handlePrint = useReactToPrint({
-        content: () => componentRef.current,
+        content: () => salesReceiptRef.current,
       });
+
+      useEffect(() => {
+        // Reference to the specific document
+        const assetRef = doc(db, staffCol, regNo);
+    
+        // Listen for real-time updates
+        const unsubscribe = onSnapshot(assetRef, (staff) => {
+          if (staff.exists()) {
+             if(staff.data()['accType']==='admin') {
+                setIsAdmin(true)
+             }else {
+                setIsAdmin(false)
+             }
+          }
+        });
+        
+        // Cleanup subscription on unmount
+        return () => unsubscribe();
+      }, []);
   
 
     useEffect(() => {
@@ -69,6 +94,10 @@ export default function Home() {
         // Clean up the subscription on unmount
         return () => unsubscribe();
       }, [queryText]);
+    
+    const toAddStock =(assetID) => {
+        navigate('/add-stock?id='+ encodeURIComponent(assetID))
+    }
 
     if (loading) {
         return <Loader />;
@@ -209,16 +238,14 @@ export default function Home() {
         setPrintReceipt(prevState => !prevState)
    }
 
+
     return(
         <>
             <NavBar onSearch={setQueryText} Hcolor={color} />
 
             {/* body */}
 
-        <div className="section">
-        {/* <div ref={componentRef}>
-            <PrintableComponent />
-        </div> */}
+        <div className="section"  >
       {/* <button className="add-stock-button"  onClick={handlePrint}>{t('addStock')}</button> */}
         {
             
@@ -228,6 +255,10 @@ export default function Home() {
                 {
                     makeSales && index === asset.id?
                     <div className="sales-form-box">
+                    <div ref={salesReceiptRef} className="sales-receipt"> 
+                        <PrintableComponent name={asset.name.toUpperCase()} id={asset.id} quantity={Salesquantity}
+                        pricePerEach={asset.sPrice} staffID={regNo} staffName={staffNames} />
+                    </div>
                     <form onSubmit={(event) => make_sales(event,  asset.id)}>
                         <h4>{asset.name}</h4>
                         <p>{t('totalQuantity').toLowerCase()}: <b>{asset.quantity.toLocaleString()}</b></p>
@@ -286,7 +317,14 @@ export default function Home() {
                             onMakeSaleChance?
                             <tr>
                                 <td><center><button className="make-sales-button" onClick={()=>toggleMakingSales(asset.id)}>{t('makeSales')}</button></center></td>
-                                <td><center><button className="add-stock-button"  onClick={handlePrint}>{t('addStock')}</button></center></td>
+                                {
+                                    isAdmin?
+                                    <td><center><button className="add-stock-button"  onClick={()=>toAddStock(asset.id)}>{t('addStock')}</button></center></td>
+                                    :
+                                    <td style={{fontWeight: "bolder"}}>{t('appTitle')}</td>
+
+                                }
+                              
                             </tr>
                         :
                         <tr></tr>

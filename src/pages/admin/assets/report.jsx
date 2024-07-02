@@ -24,10 +24,12 @@ const AssetReport =() => {
     const regNo = useSelector(state => state.regNo);
     const [availableQuantity, setAvailableQuantity] =useState(0)
     const [lastAddStockStaff, setlastAddStockStaff] =useState("")
-    const [lastAddQuantity, setlastAddQuantity] = useState(0)
+    const [lastAddedQuantity, setlastAddedQuantity] = useState(0)
     const [lastAddedDate, setlastAddedDate] =useState()
     const [staffRegistered, setStaffRegistered] =useState()
     const [dateRegistered, setDateRegistered] =useState()
+    const [lastStaffUpdated, setLastStaffUpdated] =useState()
+    const [lastDateUpdated, setLastDateUpdated] =useState()
     const { t } = useTranslation()
     const [loader, setLoader] =useState(true)
     const [assetSalesDataList, setAssetSalesDataList] =useState([])
@@ -75,9 +77,11 @@ const AssetReport =() => {
           if (asset.exists()) {
             setDateRegistered(asset.data()['dateRegistered'].toDate());
             setStaffRegistered(asset.data()['staffRegistered']);
-            // setlastAddedDate(asset.data()['lastAddedStockDate'].toDate());
-            setlastAddStockStaff(asset.data()['lastAddedStockStaff']);
-            setlastAddQuantity(asset.data()['lastAddedQuantity']);
+            setLastStaffUpdated(asset.data()['lastStaffUpdated'])
+            setLastDateUpdated(asset.data()['lastDateUpdated'])
+            setlastAddedDate(asset.data()['lastDateAddedQuantity']);
+            setlastAddStockStaff(asset.data()['lastStaffAddedQuantity']);
+            setlastAddedQuantity(asset.data()['lastAddedQuantity']);
             setAvailableQuantity(asset.data()['quantity']);
             setName(asset.data()['name']);
         
@@ -132,19 +136,27 @@ const AssetReport =() => {
                     </tr>
                     <tr>
                         <th>Staff Registered</th>
-                        <td>RUYANGE YAMUNGU MUSTAFA / <span style={{color: "green"}}>{staffRegistered}</span></td>
+                        <td><span style={{color: "green"}}>{staffRegistered}</span></td>
                     </tr>
                     <tr>
-                        <th>Last added stock date</th>
-                        <td>{moment(lastAddedDate).format("DD-MM-YYYY, h:mm:ss a")}</td>
+                        <th>last added quantity</th>
+                        <td>{lastAddedQuantity===undefined?'':lastAddedQuantity.toLocaleString()}</td>
                     </tr>
                     <tr>
-                        <th>last staff added stock</th>
-                        <td>RUYANGE YAMUNGU MUSTAFA / <span style={{color: "green"}}>{lastAddStockStaff}</span></td>
+                        <th>last date added quantity</th>
+                        <td>{lastAddedDate}</td>
                     </tr>
                     <tr>
-                        <th>last stock amount added</th>
-                        <td>{lastAddQuantity}</td>
+                        <th>last staff added quantity</th>
+                        <td>{lastAddStockStaff}</td>
+                    </tr>
+                    <tr>
+                        <th>last date updated</th>
+                        <td>{lastDateUpdated}</td>
+                    </tr>
+                    <tr>
+                        <th>last staff updated</th>
+                        <td>{lastStaffUpdated}</td>
                     </tr>
                 </table>
                 <br /><br />
@@ -199,7 +211,7 @@ const AssetReport =() => {
                 </table>
                 </div>
 
-                <button className="submit-buttons" onClick={handlePrint}>PRINT</button>
+                {/* <button className="submit-buttons" onClick={handlePrint}>PRINT</button> */}
             </div>
           
 

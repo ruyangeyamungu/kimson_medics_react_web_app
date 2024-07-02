@@ -39,6 +39,7 @@ const AdminHome = ()=>{
     // today sales
     useEffect(() => {
           
+        
         const q = query(collection(db, SALES_COL),
                   where("strDate", '==', todayDate)
       ); 
@@ -185,6 +186,14 @@ const AdminHome = ()=>{
             navigate('/staff-det?id='+ encodeURIComponent(regNo))
         }
 
+        const toSalesReport =() => {
+            navigate('/sales-report')
+        }
+
+        const toStockReport =() => {
+            navigate('/stock-report')
+        }
+
 
     if(loader) {
         return(
@@ -241,12 +250,12 @@ const AdminHome = ()=>{
                     </tr>
                 </table>
                  {/* reports view */}
-                <div className="reports">
-                    <h3><u>{t('viewAndPrint')}</u></h3>
+                <div className="reports all">
+                    <h2><u>{t('viewAndPrint')}</u></h2>
                     <br />
-                    <h3>{t('salesReport')}</h3>
+                    <h3 onClick={toSalesReport}>{t('salesReport')}</h3>
                     <br />
-                    <h3>{t('stockReport')}</h3>
+                    <h3 onClick={toStockReport}>{t('stockReport')}</h3>
                 </div>
                 <div className="adminCredentials" >
                     <h3>{staffNames}</h3>
@@ -311,6 +320,7 @@ const AdminHome = ()=>{
                 <div className="sector-top-sales">
                     <br />
                     <h3>{t('topSales')}</h3>
+                    {/* <input type="search" style={{width: "100%"}} placeholder="search here..." /> */}
                     {
                         topSales.map(asset => (
                             <div className="asset-sales">
@@ -318,7 +328,7 @@ const AdminHome = ()=>{
                                 <caption>{asset['name']}</caption>
                                 <tr>
                                     <td style={{color: 'blue'}}>{[asset['quantity']]}</td>
-                                    <td style={{color: 'green'}}>{Math.round([asset['quantity']]*100/totalSalesQuantity)}%</td>
+                                    <td style={{color: 'green'}}>{([asset['quantity']]*100/totalSalesQuantity).toFixed(2)}%</td>
                                 </tr>
                             </table>
                         </div>

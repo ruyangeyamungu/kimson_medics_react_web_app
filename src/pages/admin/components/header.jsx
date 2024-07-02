@@ -65,11 +65,11 @@ export const AdminHeader= () => {
 
         </div>
         <div className={`admin-drawer ${open ? 'open' : ''}`}>
-           <center><FontAwesomeIcon icon={faClose} style={{fontSize: "20px", marginBottom: "10px", color: "white"}} onClick={openDrawer} /></center>
+           <center><FontAwesomeIcon icon={faClose} style={{fontSize: "20px", marginBottom: "10px", color: "black"}} onClick={openDrawer} /></center>
             <div className="form-box">
-                <a style={{fontWeight: "bolder"}}>{t('dashBoard')}</a>
+                <a style={{fontWeight: "bolder"}} onClick={toDashBoard}>{t('dashBoard')}</a>
                 <br /><br />
-                <a style={{marginTop: '20px'}}>{t('home')}</a>
+                <a style={{marginTop: '20px'}} onClick={toHome}>{t('home')}</a>
             </div>
             <div className="form-box">
                 <div className="navButtons">

@@ -14,6 +14,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { getStaffRegNo } from "../../../functions/get_staff_reg_no";
 import { get_doc_data } from "../../../functions/get_doc_data";
 import { useLocation } from 'react-router-dom';
+import moment from "moment/moment";
 
 const AddStock =() => {
     const [isLoading, setisLoading] =useState(false)
@@ -24,8 +25,8 @@ const AddStock =() => {
     const regNo = useSelector(state => state.regNo);
     const [assetName, setassetName] =useState("")
     const [quantity, setQuantity] = useState()
-    const [bPriceOne, setbPriceOne] =useState(1)
-    const [bPriceAll, setbPriceAll] =useState()
+    const [bPricePerOne, setbPricePerOne] =useState()
+    
     const [sPrice, setsPrice] =useState()
     const { t } = useTranslation()
     const [loader, setLoader] =useState(true)
@@ -43,8 +44,7 @@ const AddStock =() => {
           if (asset.exists()) {
             setassetName(asset.data()['name']);
             setsPrice(asset.data()['sPrice'])
-            // setbPriceOne(asset.data()['bPrice'])
-            // setbPriceAll(asse.data()[''])
+            setbPricePerOne(asset.data()['bPricePerOne'])
             setLoader(false)
            
           } else {
@@ -60,7 +60,7 @@ const AddStock =() => {
         event.preventDefault()
         setisError(false);
 
-        if(assetName != null && quantity >= 1 && bPriceAll >=1 && sPrice >=1 ) {
+        if(assetName != null && quantity >= 1 && bPricePerOne >=1 && sPrice >=1 ) {
             setisLoading(true)
 
             try{
@@ -82,12 +82,13 @@ const AddStock =() => {
                     if(isStaff) {
                        const assetData = {
                              "sPrice": sPrice,
-                             "totalBprice": bPriceAll,
-                             "PerOneBprice": bPriceOne,
+                             "totalBprice": bPricePerOne*totalQt,
+                             "bPricePerOne": bPricePerOne,
                              "quantity": totalQt,
-                             "lastAddedStockDate": new Date(),
-                             "lastAddedStockStaff": regNo,
-                             "lastAddedQuantity": quantity
+                             "lastDateAddedQuantity": moment(new Date()).format('DD-MM-YYYY'),
+                             "lastStaffAddedQuantity": regNo,
+                             "lastAddedQuantity": quantity,
+                              
                         } 
     
                        // add asset
@@ -129,7 +130,7 @@ const AddStock =() => {
                 setErrorMsg("quantity must be greater than 0")
                 lineRef.current.scrollIntoView({ behavior: "smooth" });
             }
-            if(bPriceAll < 1) {
+            if(bPricePerOne < 1) {
                 setisError(true)
                 setErrorMsg("all buying price must be greater than 0")
                 lineRef.current.scrollIntoView({ behavior: "smooth" });
@@ -137,11 +138,6 @@ const AddStock =() => {
             if(sPrice < 1) {
                 setisError(true)
                 setErrorMsg("selling price must be greater than 0")
-                lineRef.current.scrollIntoView({ behavior: "smooth" });
-            }
-            if(bPriceOne < 1 && bPriceOne !== null) {
-                setisError(true)
-                setErrorMsg("buying price  per one must be greater than 0 or empty")
                 lineRef.current.scrollIntoView({ behavior: "smooth" });
             }
 
@@ -180,12 +176,8 @@ const AddStock =() => {
                         <InputNumber  style={{paddingBottom: "10px"}} value={quantity} onValueChange={(e)=>setQuantity(e.value)} min={0} required/>
 
                         <label for="bprice">buying price @1 Qt</label>
-                        <InputNumber  style={{paddingBottom: "10px"}}  value={bPriceOne} onValueChange={(e)=>setbPriceOne(e.value)} min={0} /><br />
-                        <span style={{color: "green"}}>you can leave this part, a set buying price for @all Qts</span>
-
-                        <label for="bprice">buying price @all Qts</label>
-                        <InputNumber  style={{paddingBottom: "10px"}} value={bPriceAll} max={bPriceOne*quantity} onValueChange={(e)=>setbPriceAll(e.value)}  min={0} required />
-
+                        <InputNumber  style={{paddingBottom: "10px"}}  value={bPricePerOne} onValueChange={(e)=>setbPricePerOne(e.value)} min={0} required/><br />
+                
                         <label for="bprice">selling price @1 </label>
                         <InputNumber  style={{paddingBottom: "10px"}} value={sPrice} onValueChange={(e) =>{setsPrice(e.value)}} min={0} required />
 
@@ -193,7 +185,7 @@ const AddStock =() => {
                             isLoading?
                             <div className="loader" id="loader"></div>
                             :
-                            <input type="submit"  className="submit-buttons" value="SIGN UP" />
+                            <input type="submit"  className="submit-buttons" value="ADD STOCK" />
                         }
 
                         {
@@ -211,8 +203,8 @@ const AddStock =() => {
                 </div>
             </div>
 
-            <div className="staff-list-box">
-                <h3>STAFF LIST</h3>
+            <div className="asset-list-box">
+                <h3>ASSET LIST</h3>
                 <AssetList />
             </div>
         </section>

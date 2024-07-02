@@ -13,6 +13,7 @@ import  Loader  from "../../loader/Loader";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
+import { set } from "rsuite/esm/internals/utils/date";
 
 const StaffSaleReport =() => {
     const [color, setColor] = useState('blue');
@@ -35,14 +36,14 @@ const StaffSaleReport =() => {
     const [isLoading, setIsLoading] =useState(false)
     const [returnIndex, setReturnIndex] =useState()
     
-    async function returnedAndCorrectAssetSales(assetID,salesID, soldQuantity) {
+    async function returnedAndCorrectAssetSales(assetID,salesID, soldQuantity, assetName) {
+
         setReturnIndex(salesID)
 
-        setIsLoading(true)
         // check is asset still exists
         const doesAssetExist =  await check_existance(ASSETS_COL, assetID)
         if(doesAssetExist) {
-
+            setIsLoading(true)
             try {
 
                 await   get_doc_data(ASSETS_COL, assetID)
@@ -65,8 +66,10 @@ const StaffSaleReport =() => {
                           .then(async () => {
                             const saleRef = doc(db, SALES_COL, salesID);
                            await  deleteDoc(saleRef)
-                            setIsLoading()
+                            setIsLoading(false)
+                            alert(soldQuantity.toLocaleString()+ ' ' + 'returned seccessfull')
                           })
+                          
                       })
       
                   })
@@ -75,14 +78,12 @@ const StaffSaleReport =() => {
 
             }catch (error) {
                 setIsLoading(false)
-                console.log("Error", error);
+                alert('somethong, went wrong, try again')
             }
             // get asset data and update quatinty filed
-
-
         } else {
-
-            console.log("asset does not exits");
+            setLoading(false)
+            alert(soldQuantity.toLocaleString()+ ' ' + 'returned failed seems the asset was deleted  , please visit administrator for futher steps', )
         }
         
     }
@@ -173,11 +174,10 @@ const StaffSaleReport =() => {
          <NavBar onSearch={setQueryText} Pcolor={color}/>
 
          {/* BODY */}
-         <div className="section" >
+         <div className="section" style={{top: "20vh"}}>
             
             <div className="form-box">
                 <u><h3>{t('stSummaryReport')}<span style={{color: "blue", fontWeight: "bolder"}}>{todayDate}</span></h3></u>
-                {/* <p>ASSET TYPES: <span style={{color: "green", fontWeight: "bolder"}}>{assetTypeSoldPerDay}</span></p> */}
                 <p>{t('totalQuantity')}: <span style={{color: "green", fontWeight: "bolder"}}>{totalItemsSoldPerDay.toLocaleString()}</span></p>
                 <p>{t('cash')} <span style={{color: "green", fontWeight: "bolder"}}>{cashSoldPerDay.toLocaleString()} tsh</span></p>
             </div>   
@@ -210,14 +210,12 @@ const StaffSaleReport =() => {
                             <tr>
                                 {
                                     isLoading?
-                                    <td><center><div className="loader-dots"></div></center></td>
+                                    <td style={{padding: '10px'}}><center><div className="loader-dots"></div></center></td>
                                     :
-                                    <td colSpan={2}><center><button onClick={()=>returnedAndCorrectAssetSales(asset['assetID'], asset['id'], asset['selledQauntity'] )}
+                                    <td colSpan={2}><center><button onClick={()=>returnedAndCorrectAssetSales(asset['assetID'], asset['id'], asset['selledQauntity'], asset.name )}
                                     style={{color: "green", fontWeight: "bolder"}}>{t('return')}</button></center></td>
                                 }
-
                             
-        
                             </tr>
                         </table>
                     </center>    

@@ -4,7 +4,7 @@ import "../styles/Forms.css"
 import "../styles/buttons.css"
 import { useNavigate } from "react-router-dom";
 import { GoogleAuthProvider, RecaptchaVerifier, signInWithPopup, signInWithPhoneNumber, signOut } from "firebase/auth";
-import { auth, staffCol } from "../App";
+import { auth, staffCol, db } from "../App";
 import { update_field } from "../functions/update_field";
 import { useSelector } from 'react-redux';
 import  { StaffIDAndNames } from "../components/StaffRegNoAndNames";
@@ -13,6 +13,7 @@ import { faMicrosoft, faGoogle, faApple } from '@fortawesome/free-brands-svg-ico
 import { faPhone } from '@fortawesome/free-solid-svg-icons';
 import { useTranslation } from 'react-i18next';
 import { get_doc_data } from "../functions/get_doc_data";
+import { collection, query, where, getDocs } from "firebase/firestore";
 
 
 const AuthServices =() =>{
@@ -43,34 +44,52 @@ const AuthServices =() =>{
         navigate("/phoneInput")
     }
 
-    const signInWithGoogle =() =>{
+    const signInWithGoogle =async () =>{
         setisLoading(true)
+   
+        const provider =new GoogleAuthProvider()
+        signInWithPopup(auth, provider)
+        .then(async (userCredentials) => {
+    
+            const staffs =query(collection(db, staffCol), where("accountID", "==", userCredentials.user.uid))
 
-       const provider =new GoogleAuthProvider()
-        signInWithPopup(auth, provider).then(async (userCredentials) =>{
-            const user =userCredentials.user;
-             await get_doc_data(staffCol, regNo)
-             .then(async (staffCredentials)=>{
-                 if(staffCredentials['accountID'] === user.uid || staffCredentials['accountID']===null  ) {
+            const querySnapshotp = await getDocs(staffs);
 
-                    const updateData = {
-                        accountID: user.uid
-                    }
-                    await update_field(staffCol, regNo, updateData)
+            if(querySnapshotp.empty) {
+
+                const updateAccountID = {
+                    accountID: userCredentials.user.uid
+                }
+                await update_field(staffCol, regNo, updateAccountID)
+                .then(()=>{
                     navigate('/home')
-                 } else {
+                })
 
-                    signOut(auth).then(()=>{
-                        navigate('/verfyID')
-                    })
-                 }
-                
-             })
+            }else {
+                await get_doc_data(staffCol, regNo)
+                .then(async (staffData)=>{
+                    if(staffData['accountID']=== userCredentials.user.uid) {
+                        navigate('/home')
+                    }else {
+                      await  signOut(auth)
+                        .then(()=>{
+                           // navigate('/')
+                           setisError(true)
+                           setErrorMsg(t('incorrect account'))
+                        })
+                    }
+                })
 
-        }).catch((error) =>{
+            }
+
+        })
+        .catch((error) =>{
             setisError(true)
             setErrorMsg(t('unknown'))
-
+            // signOut(auth).then(()=>{
+            //     navigate('/verfyID')
+            // })
+            
         })
 
     }
