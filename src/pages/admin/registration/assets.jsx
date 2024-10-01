@@ -23,6 +23,9 @@ export const AssetReg=()=> {
     const [bPricePerOne, setbPriceOne] =useState()
     const [sPrice, setsPrice] =useState()
     const { t } = useTranslation();
+    const[brandName, setBrandName] =useState('')
+
+    const brandNames = ['itel', 'samsung', 'infinix', 'techno', 'guava', 'bontel', 'nokia', 'oppo']
 
     const handleAssetReg = async (event) =>{
         event.preventDefault()
@@ -38,7 +41,7 @@ export const AssetReg=()=> {
 
                 // check if asset name exits
                 const assetCollection= collection(db, ASSETS_COL);
-                const q = query(assetCollection, where("name", "==", assetName.toUpperCase()));
+                const q = query(assetCollection, where("name", "==", assetName.toUpperCase()), where("brand", "==", brandName.toUpperCase()));
                  
                 const assetNames = await getDocs(q);
 
@@ -49,16 +52,19 @@ export const AssetReg=()=> {
                         const regNo =await getStaffRegNo(user.uid)
                         const isStaff = await check_existance(staffCol, regNo.toUpperCase().trim())
                         if(isStaff) {
-        
+
                         const assetData = {
+                        
                                 "name": assetName.toUpperCase(),
                                 "sPrice": sPrice,
                                 "bPricePerOne": bPricePerOne,
                                 "dateRegistered": new Date(),
                                 "staffRegistered": regNo,
                                 "quantity": quantity,
-                                
-                        } 
+                                "brand":brandName.toUpperCase(),
+                                'fullName': assetName.toUpperCase().trim()+brandName.toUpperCase().trim()
+                            
+                            } 
         
                         // add asset
                             await addDoc(collection(db, 'ASSETS'), assetData)
@@ -73,6 +79,7 @@ export const AssetReg=()=> {
                                 setbPriceOne()
                                 setsPrice()
                                 setisLoading(false)
+
                             })
                         } else {
                             setisLoading(false)
@@ -85,7 +92,7 @@ export const AssetReg=()=> {
                     
                 }else{
                     
-                    alert(assetName+ " : is aready present, go and add stock or update it ")
+                    alert(assetName+'-'+brandName+': '+ t('assetIsPresent'));
                     Location.window.reload()
 
                 }
@@ -120,6 +127,11 @@ export const AssetReg=()=> {
                 lineRef.current.scrollIntoView({ behavior: "smooth" });
             }
         }
+    
+    const handlBrandNameChange =(event) =>{
+        event.preventDefault()
+        setBrandName(event.target.value)
+    }
 
     if(regNo===null) {
         signOut(auth)
@@ -135,27 +147,38 @@ export const AssetReg=()=> {
             <div className="form-box">
                 <hr id="line" />
                 <br />
-                <center><h2>ASSET REGISTATION</h2></center>
+                <center><h2>{t('assetReg')}</h2></center>
                 <hr />
                 <form onSubmit={handleAssetReg}>
 
-                    <label for="assetName">asset name</label>
-                    <input type="text" placeholder="asset name.." value={assetName.toUpperCase().trim()} onChange={(e)=>setassetName(e.target.value)} min={0} maxLength={20}required/>
+                    <label for="assetName">{t('name').toLowerCase()}</label>
+                    <input type="text" placeholder={t('namePlc')} value={assetName.toUpperCase().trim()} onChange={(e)=>setassetName(e.target.value)} min={0} maxLength={20}required/>
+                    <label for="assetName">{t('brand')}</label>
+                    <input type="text" placeholder={t('brandPlc')} value={brandName.toUpperCase().trim()} onChange={(e)=>setBrandName(e.target.value)} min={0} maxLength={20}required/>
+                    
+                    <hr style={{marginTop: "10px"}}></hr>
+                    {
+                        brandNames.map(
+                            brand =><button className="brandNamesBtn" onClick={handlBrandNameChange} value={brand}>{brand}</button>
+                        )
+                    }
+                    
+                    <hr></hr>
+                    
+                    <label for="password">{t('totalQuantity').toLowerCase()} </label>
+                    <InputNumber  style={{paddingBottom: "10px"}} value={quantity} onValueChange={(e)=>setQuantity(e.value)} min={0} placeholder={t('totalQuantityPlc')} required/>
 
-                    <label for="password">{t('totalQuantity')} </label>
-                    <InputNumber  style={{paddingBottom: "10px"}} value={quantity} onValueChange={(e)=>setQuantity(e.value)} min={0} required/>
-
-                    <label for="bprice">buying price @1 Qt</label>
-                    <InputNumber  style={{paddingBottom: "10px"}}  value={bPricePerOne} onValueChange={(e)=>setbPriceOne(e.value)} min={0} required/><br />
+                    <label for="bprice">{t('buyingPrice@1')}</label>
+                    <InputNumber  style={{paddingBottom: "10px"}}  value={bPricePerOne} onValueChange={(e)=>setbPriceOne(e.value)} min={0} placeholder={t('buyingPrice@1Plc')} required/><br />
                   
-                    <label for="bprice">selling price @1 </label>
-                    <InputNumber  style={{paddingBottom: "10px"}} value={sPrice} onValueChange={(e) =>{setsPrice(e.value)}} min={0} required />
+                    <label for="bprice">{t('sellingPrice@1')}</label>
+                    <InputNumber  style={{paddingBottom: "10px"}} value={sPrice} onValueChange={(e) =>{setsPrice(e.value)}} min={0} placeholder={t('sellingPrice@1Plc')} required />
 
                     {
                         isLoading?
                         <div className="loader" id="loader"></div>
                         :
-                        <input type="submit"  className="submit-buttons" value="REGISTER" />
+                        <input type="submit"  className="submit-buttons" value={t('register')} />
                     }
                     
                 {

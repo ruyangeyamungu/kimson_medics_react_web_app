@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { AssetList } from "./components/assetList";
 import AssetHeader from "./components/headerComponent";
 import { SelectedAsset } from "./components/selectedAsset";
-import { onSnapshot, query, doc, updateDoc, collection, deleteDoc } from "firebase/firestore";
+import { onSnapshot, query, doc, where,getDocs, collection, deleteDoc } from "firebase/firestore";
 import { db, ASSETS_COL, staffCol, auth } from "../../../App";
 import { check_existance } from "../../../functions/check_existance";
 import { update_field } from "../../../functions/update_field";
@@ -25,9 +25,11 @@ const ManageAsset =() => {
     const lineRef =useRef()
     const regNo = useSelector(state => state.regNo);
     const [assetName, setassetName] =useState("")
-    const [initialAssetName, setInitialAssetName] =useState("")
     const [quantity, setQuantity] = useState()
     const [bPricePerOne, setbPricePerOne] =useState()
+    const[brandName, setBrandName] =useState('')
+
+    const brandNames = ['itel', 'samsung', 'infinix', 'techno', 'guava', 'bontel', 'nokia', 'oppo']
   
     const [sPrice, setsPrice] =useState()
     const { t } = useTranslation()
@@ -37,6 +39,7 @@ const ManageAsset =() => {
 
     const queryID = new URLSearchParams(useLocation().search);
     const ID = queryID.get('id');
+    const [fullName, setFullName] =useState();
 
     useEffect(() => {
         // Reference to the specific document
@@ -46,10 +49,11 @@ const ManageAsset =() => {
         const unsubscribe = onSnapshot(assetRef, (asset) => {
           if (asset.exists()) {
             setassetName(asset.data()['name']);
-            setInitialAssetName(asset.data()['name']);
+            setBrandName(asset.data()['brand']);
             setQuantity(asset.data()['quantity']);
             setsPrice(asset.data()['sPrice'])
-            setbPricePerOne(asset.data()['bPricePerOne'])
+            setbPricePerOne(asset.data()['bPricePerOne']);
+            setFullName(asset.data()['fullName'])
             setLoader(false)
            
           } else {
@@ -64,77 +68,89 @@ const ManageAsset =() => {
     const handleManageAssetChange = async (event) =>{
         event.preventDefault()
         setisError(false);
-
+  
         if(assetName != null && quantity >= 1 && bPricePerOne >=1 && sPrice >=1 ) {
             setisLoading(true)
 
-        //    const assetData = await get_doc_data(ASSETS_COL, ID)
+            if(fullName.toUpperCase().trim() !==assetName.toUpperCase().trim()+brandName.toUpperCase().trim()) {
 
-        // //    console.log(assetData['name']);
-        // //    console.log(initialAssetName);
-
-        // //    if(assetData['name'].toUpperCase() === assetName.toUpperCase() ) {
-        // //         if(assetName.toUpperCase ===initialAssetName.toUpperCase()) {
-
-        // //         }
-
-        //    } 
-            
-
-            try{
-
-                // check if asset name exits
-                const isAsset =check_existance(ASSETS_COL, ID)
                 
-                if(isAsset) {
+            
+                // check if asset name is present
+                const assetCollection= collection(db, ASSETS_COL);
+                const q = query(assetCollection, where("name", "==", assetName.toUpperCase()), where("brand", "==", brandName.toUpperCase()));
+                 
+                const assetNames = await getDocs(q);
 
-                onAuthStateChanged(auth, async user =>{
-                    // gets user eg no using its account it
-                    const regNo =await getStaffRegNo(user.uid)
-                    const isStaff = await check_existance(staffCol, regNo.toUpperCase().trim())
-                    if(isStaff) {
-    
-                       const assetData = {
-                            "name": assetName.toUpperCase(),
-                             "sPrice": sPrice,
-                             "totalBprice": bPricePerOne*quantity,
-                             "bPricePerOne": bPricePerOne,
-                             "lastDateUpdated": moment(new Date()).format('DD-MM-YYYY HH:MM:ss'),
-                             "lastStaffUpdated": regNo,
-                             "quantity": quantity
-                       } 
-    
-                       // add asset
-                        await update_field(ASSETS_COL,ID ,assetData)
-                        .then(() =>{
-                            setisError(true)
-                            setSuccessMsg ("updated successfully")
-                            lineRef.current.scrollIntoView({ behavior: "smooth" });
+                if(assetNames.empty) {
+                     
+                     try{
 
-                            setisLoading(false)
-                        })
-                    } else {
-                        setisLoading(false)
+                        // check if asset name exits
+                        const isAsset =check_existance(ASSETS_COL, ID)
+                        
+                        if(isAsset) {
+        
+                        onAuthStateChanged(auth, async user =>{
+                            // gets user eg no using its account it
+                            const regNo =await getStaffRegNo(user.uid)
+                            const isStaff = await check_existance(staffCol, regNo.toUpperCase().trim())
+                            if(isStaff) {
+            
+                               const assetData = {
+                                    "name": assetName.toUpperCase(),
+                                    "brand": brandName.toUpperCase(),
+                                    "sPrice": sPrice,
+                                    "totalBprice": bPricePerOne*quantity,
+                                    "bPricePerOne": bPricePerOne,
+                                    "lastDateUpdated": moment(new Date()).format('DD-MM-YYYY HH:MM:ss'),
+                                    "lastStaffUpdated": regNo,
+                                    "quantity": quantity,
+                                    "fullName": assetName.toUpperCase().trim()+brandName.toUpperCase().trim()
+                               } 
+            
+                               // add asset
+                                await update_field(ASSETS_COL,ID ,assetData)
+                                .then(() =>{
+                                    setisError(true)
+                                    setSuccessMsg ("updated successfully")
+                                    lineRef.current.scrollIntoView({ behavior: "smooth" });
+        
+                                    setisLoading(false)
+                                })
+                            } else {
+                                setisLoading(false)
+                                setisError(true)
+                                setErrorMsg ("faid to recorginize your staff, try to log out and back login")
+                                lineRef.current.scrollIntoView({ behavior: "smooth" });
+                            }
+            
+                            })
+                            
+                        }else{
+                            
+                            alert(assetName+ " : is not  present, go and register it ")
+                            Location.window.reload()
+        
+                        }
+        
+                    }catch(error) {
+                        setisLoading(false);
                         setisError(true)
-                        setErrorMsg ("faid to recorginize your staff, try to log out and back login")
+                        setErrorMsg(t('unknown'))
                         lineRef.current.scrollIntoView({ behavior: "smooth" });
                     }
-    
-                    })
-                    
-                }else{
-                    
-                    alert(assetName+ " : is not  present, go and register it ")
-                    Location.window.reload()
+                } else {
+                    setisLoading(false)
 
+                    alert(assetName+'-'+brandName+': '+ t('assetIsPresent'));
                 }
 
-            }catch(error) {
-                setisLoading(false);
-                setisError(true)
-                setErrorMsg(t('unknown'))
-                lineRef.current.scrollIntoView({ behavior: "smooth" });
             }
+
+          
+
+
 
         }
 
@@ -176,6 +192,10 @@ const ManageAsset =() => {
     function hideErrorBox() {
         setisError(false)
     }
+    const handlBrandNameChange =(event) =>{
+        event.preventDefault()
+        setBrandName(event.target.value)
+    }
 
     if(loader){
         return(
@@ -211,18 +231,28 @@ const ManageAsset =() => {
                 <div className="form-box">
                     <form onSubmit={handleManageAssetChange}>
 
-                        <label for="assetName">asset name</label>
-                        <input type="text" placeholder="asset name.." value={assetName.toUpperCase().trim()} onChange={(e)=>setassetName(e.target.value)} min={0} maxLength={20}required/>
+                        <label for="assetName">{t('name').toLowerCase()}</label>
+                        <input type="text" placeholder={t('namePlc')}  value={assetName.toUpperCase().trim()} onChange={(e)=>setassetName(e.target.value)} min={0} maxLength={20}required/>
+                        <label for="assetName">{t('brand')}</label>
+                        <input type="text" placeholder={t('brandPlc')} value={brandName.toUpperCase().trim()} onChange={(e)=>setBrandName(e.target.value)} min={0} maxLength={20}required/>
+                        
+                        <hr style={{marginTop: "10px"}}></hr>
+                        {
+                            brandNames.map(
+                                brand =><button className="brandNamesBtn" onClick={handlBrandNameChange} value={brand}>{brand}</button>
+                            )
+                        }
+                        
+                        <hr></hr>
 
-                        <label for="password">{t('totalQuantity')} </label>
-                        <InputNumber  style={{paddingBottom: "10px"}} value={quantity} onValueChange={(e)=>setQuantity(e.value)} min={0} required/>
+                        <label for="password">{t('totalQuantity').toLowerCase()} </label>
+                        <InputNumber  style={{paddingBottom: "10px"}} value={quantity} onValueChange={(e)=>setQuantity(e.value)} min={0} placeholder={t('totalQuantityPlc')} required/>
 
-                        <label for="bprice">buying price @1 Qt</label>
-                        <InputNumber  style={{paddingBottom: "10px"}}  value={bPricePerOne} onValueChange={(e)=>setbPricePerOne(e.value)} min={0}  required/><br />
+                        <label for="bprice">{t('buyingPrice@1')}</label>
+                        <InputNumber  style={{paddingBottom: "10px"}}  value={bPricePerOne} onValueChange={(e)=>setbPricePerOne(e.value)} min={0} placeholder={t('buyingPrice@1Plc')} required /><br />
                        
-
-                        <label for="bprice">selling price @1 </label>
-                        <InputNumber  style={{paddingBottom: "10px"}} value={sPrice} onValueChange={(e) =>{setsPrice(e.value)}} min={0} required />
+                        <label for="bprice">{t('sellingPrice@1')}</label>
+                        <InputNumber  style={{paddingBottom: "10px"}} value={sPrice} onValueChange={(e) =>{setsPrice(e.value)}} min={0}  placeholder={t('sellingPrice@1Plc')} required />
 
                         {
                             isLoading?

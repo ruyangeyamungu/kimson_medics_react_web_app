@@ -12,8 +12,6 @@ import { AdminHeader } from "../components/header";
 import { useNavigate } from "react-router-dom";
 
 
-
-
 const AdminHome = ()=>{
     const [loader, setLoader]=useState(true)
     const [topSales, setTopSales] = useState([])
@@ -39,7 +37,6 @@ const AdminHome = ()=>{
     // today sales
     useEffect(() => {
           
-        
         const q = query(collection(db, SALES_COL),
                   where("strDate", '==', todayDate)
       ); 
@@ -194,6 +191,10 @@ const AdminHome = ()=>{
             navigate('/stock-report')
         }
 
+        const toAssetList =() => {
+            navigate('/allAssets')
+        }
+
 
     if(loader) {
         return(
@@ -298,15 +299,15 @@ const AdminHome = ()=>{
 
                 </div>
                 <div className="sector">
-                    <h3 className="asset-title">{t('assetInStock')}<span style={{color: 'blue', cursor: 'pointer'}}>{t('viewAll')}</span></h3>
+                    <h3 className="asset-title">{t('assetInStock')}<span style={{color: 'blue', cursor: 'pointer'}} onClick={toAssetList}>{t('viewAll')}</span></h3>
                     <div className="asset-list">
                         {
-                            assetList.map(ass => (
+                            assetList.map(asset0 => (
 
-                                <div className="asset" onClick={()=>toAssetData(ass.id)}>
+                                <div className="asset" onClick={()=>toAssetData(asset0.id)}>
                                     <FontAwesomeIcon icon={faHourglassStart} style={{fontSize: '70px', color: 'blue' }} />
                                     <br /><br />
-                                    <h3>{ass['name']}</h3>
+                                    <h3>{asset0['name']}-{asset0['brand']}</h3>
                                 </div>
                             
                             ))

@@ -257,6 +257,28 @@ padding: 8px;
     color: white;
     padding: 5px;
 }
+
+.all-asset-list-view {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-gap: 10px
+}
+
+.all-asset-list-view > .asset {
+    padding: 10px;
+    background-color: hwb(240 97% 2% / 0.938);
+    border: 1px solid #ffffff;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
+    text-align: center;
+    margin: 10px;
+    overflow: hidden;
+}
+.all-asset-list-view > .asset:hover {
+    transform: scale(1.4,1.4);
+    cursor: pointer;
+}
+
 @media (max-width: 800px) {
     section {
       flex-direction: column;

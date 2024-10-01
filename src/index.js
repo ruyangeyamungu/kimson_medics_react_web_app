@@ -31,6 +31,7 @@ import AssetReport from "./pages/admin/assets/report";
 import SalesReport from "./pages/admin/reports/sales-report";
 import StockReport from "./pages/admin/reports/stock-report";
 import StaffReport from "./pages/admin/staff/report";
+import AllAssetListView from "./pages/admin/assets/assetList";
 
 
 export default function App() {
@@ -70,6 +71,7 @@ export default function App() {
                 <Route  path="/add-stock" element={<AddStock />}  />
                 <Route  path="/asset-report" element={<AssetReport />}  />
                 <Route  path="/staff-report0" element={<StaffReport />}  />
+                <Route path="/allAssets" element={<AllAssetListView />}  />
 
             </Routes>
             </Provider>

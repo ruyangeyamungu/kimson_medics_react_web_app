@@ -4,13 +4,13 @@ import { getStorage } from "firebase/storage";
 import {getFirestore} from "firebase/firestore";
 
 const appConfig = {
-    apiKey: "AIzaSyAdXidjM6oH_10M6o1OBVpcI2tao67IGQ0",
-    authDomain: "kimsonmedics2.firebaseapp.com",
-    projectId: "kimsonmedics2",
-    storageBucket: "kimsonmedics2.appspot.com",
-    messagingSenderId: "199706873533",
-    appId: "1:199706873533:web:81bc78aeb3ca663b8531d4",
-    measurementId: "G-FFM87HB8XS"
+    apiKey: "AIzaSyCi3RSwhUhhAAipSJ3ka5j6M_kyPuK17ZQ",
+    authDomain: "yamungumobileapp.firebaseapp.com",
+    projectId: "yamungumobileapp",
+    storageBucket: "yamungumobileapp.appspot.com",
+    messagingSenderId: "139816501373",
+    appId: "1:139816501373:web:6521d066e608dd90207114",
+    measurementId: "G-D4SW7BNC0M"
 }
 
 export const app =initializeApp(appConfig);

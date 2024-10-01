@@ -56,7 +56,7 @@ export const AssetList=() =>{
             assetList.map(asset=> (
             <div className="asset-box" >
               <div className="data" onClick={()=>toAssetData(asset.id)} >
-                  <h4>{asset['name']}</h4>
+                  <h4>{asset['name']}-{asset['brand']}</h4>
                   <br />
                   <p>{asset['quantity'].toLocaleString()}</p>
                   <br />

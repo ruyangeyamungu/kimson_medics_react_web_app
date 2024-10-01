@@ -27,7 +27,8 @@ export default function Home() {
     const { t } = useTranslation();
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
-    const[Salesquantity, setSalesQuantity] =useState()
+    const[Salesquantity, setSalesQuantity] =useState();
+    const[totalSoldPrice, setTotalSoldPrice] =useState();
     const regNo = useSelector(state => state.regNo);
     const staffNames = useSelector(state => state.names);
     const [isLoading, setisLoading] = useState(false)
@@ -38,6 +39,10 @@ export default function Home() {
     const[printReceipt, setPrintReceipt] = useState(false)
     const [isAdmin, setIsAdmin] =useState(false)
     const navigate =useNavigate()
+    const [salesStatus, setSalesStatus] = useState();
+
+    // const[finalProfit, setfinalProfit]=useState(0)
+ 
 
     const handlePrint = useReactToPrint({
         content: () => salesReceiptRef.current,
@@ -79,8 +84,8 @@ export default function Home() {
         const q = query(collection(db, ASSETS_COL),
                     orderBy("name"),
                     startAt(queryText.toUpperCase()),
-                    endAt(queryText.toUpperCase() + "\uf8ff")
-                    // where("name", "==", queryText)
+                    endAt(queryText.toUpperCase() + "\uf8ff"),
+                
         );
     
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
@@ -95,9 +100,37 @@ export default function Home() {
         return () => unsubscribe();
       }, [queryText]);
     
+      // che=ange sales status
+    // useEffect(()=>{
+    //     if(totalSoldPrice > 20) {
+    //         SetsalesStatus('profit')
+    //     }else {
+    //         SetsalesStatus('loss');
+    //     }
+
+    // },[totalSoldPrice]);
+
+    // function changeSalesStatus(value, qauntity, buyingPrice) {
+
+    //     setTotalSoldPrice(value)
+       
+    //     if(totalSoldPrice > (qauntity*buyingPrice)) {
+    //         setSalesStatus('profit');
+    //     }
+    //     if(totalSoldPrice < (qauntity*buyingPrice)) {
+    //         setSalesStatus('loss');
+    //     }
+    //     if(totalSoldPrice === (qauntity*buyingPrice)) {
+    //         setSalesStatus('hamna faida na hasara');
+    //     }
+        
+    // }
+
+
     const toAddStock =(assetID) => {
         navigate('/add-stock?id='+ encodeURIComponent(assetID))
     }
+
 
     if (loading) {
         return <Loader />;
@@ -105,7 +138,10 @@ export default function Home() {
 
     function make_sales  (e, assetID) {
         e.preventDefault();
-        
+        var initialProfit=0;
+        var loss=0;
+        var finalProfit=0;
+
         if(navigator.onLine) {
 
             setOnMakeSaleChance(false)
@@ -117,10 +153,30 @@ export default function Home() {
             .then(async (assetData) =>{
                var qauntity =assetData['quantity']
                var sPrice =assetData['sPrice']
+
     
                if(qauntity > 0 && regNo !== null && regNo !== undefined && regNo !== " " && Salesquantity > 0) {
                 // makes sales (update asset in asset collection and and sales in sales collection)
-    
+                var initProfit0=(Salesquantity*sPrice)-(Salesquantity*assetData['bPricePerOne'])
+                
+                    if(sPrice*Salesquantity <(Salesquantity*assetData['bPricePerOne'])) {
+                        loss=(Salesquantity*assetData['bPricePerOne'])-(Salesquantity*sPrice)
+                        initProfit0=0;
+                        finalProfit=0;
+                    }
+                    if(totalSoldPrice === null) {
+                        finalProfit=initProfit0;       
+                    }
+
+                    if(totalSoldPrice > Salesquantity*assetData['bPricePerOne'] ) {        
+                        finalProfit =(totalSoldPrice)-(Salesquantity*assetData['bPricePerOne'])
+                    }
+        
+                    if(totalSoldPrice < Salesquantity*assetData['bPricePerOne'] ) {
+                        loss =(Salesquantity*assetData['bPricePerOne'])-(totalSoldPrice)
+                    }
+        
+
                     var cash = sPrice*Salesquantity
                     var remainedQty = qauntity - Salesquantity
                     if(remainedQty >=0) {
@@ -128,17 +184,24 @@ export default function Home() {
                         const updated_data = {
                             quantity :remainedQty
                         }
-                        
+
                         const colRef = collection(db, SALES_COL)
                         const selledAsset = {
                             "assetID": assetID,
                              "name": assetData['name'],
+                             "brand": assetData['brand'],
                              "selledQauntity": Salesquantity,
                              "totalPrice":  cash,
                               "sPrice": sPrice,
                               "staffSelled": regNo,
                               "date": new Date(),
-                              "strDate": moment(new Date()).format('DD-MM-YYYY')
+                              "strDate": moment(new Date()).format('DD-MM-YYYY'),
+                              "bPrice": assetData['bPricePerOne'],
+                              "profit":initProfit0,
+                              "finalProfit":finalProfit,
+                              "loss": loss,
+                              "finalTotalPriceSold": totalSoldPrice===null?cash:totalSoldPrice,
+                              'fullName': assetData['name']+assetData['brand'],
                         }
                         await addDoc(colRef, selledAsset)
                         
@@ -193,7 +256,6 @@ export default function Home() {
             seterrorMsg(t('noInternet'))
         }
     }
-    
     async function update_statics(assetID, selledQauntity, assetName) {
 
         const isAssetOnStastics = await check_existance(SALES_STASTICS_COL, assetID)
@@ -237,6 +299,7 @@ export default function Home() {
    const handleTogglePrintReceipts = () => {
         setPrintReceipt(prevState => !prevState)
    }
+   
 
 
     return(
@@ -250,7 +313,7 @@ export default function Home() {
         {
             
             data.map(asset => (
-                <div className="asset-box" style={{backgroundColor: 'blue'}} key={asset.id}>
+                <div className="asset-box" style={{backgroundColor: '#3d0345'}} key={asset.id}>
 
                 {
                     makeSales && index === asset.id?
@@ -260,7 +323,7 @@ export default function Home() {
                         pricePerEach={asset.sPrice} staffID={regNo} staffName={staffNames} />
                     </div>
                     <form onSubmit={(event) => make_sales(event,  asset.id)}>
-                        <h4>{asset.name}</h4>
+                        <h4>{asset.name}-{asset.brand}</h4>
                         <p>{t('totalQuantity').toLowerCase()}: <b>{asset.quantity.toLocaleString()}</b></p>
                         <p>{t('price').toLowerCase()}: <b>{asset.sPrice.toLocaleString()}</b> tsh</p>
                         <label style={{marginBottom: "2px"}}>{t('enterAmount')}</label>
@@ -272,15 +335,27 @@ export default function Home() {
                         min={0} 
                         required/>  
 
+                        <label style={{marginBottom: "1px"}}>total sold price</label>
+
+                        <InputNumber  
+                        style={{paddingBottom: "10px"}} 
+                        value={totalSoldPrice}
+                        onValueChange={(e) => setTotalSoldPrice(e.value)}
+                        min={0}
+                        />  
+
                         <hr />
-                        <p style={{fontSize: "20px"}}>{t('printRisit')} 
+                        {/* <p style={{fontSize: "20px"}}>{t('printRisit')} 
                             <input 
                             type="checkbox"
                             style={{padding: "30px"}}
                             checked= {printReceipt}
                             onChange={handleTogglePrintReceipts}
                             />
-                            </p>
+                            </p> */}
+                        <h4>HALI:
+                        {totalSoldPrice > Salesquantity*asset.bPricePerOne?'profit':'loss'}
+                        </h4>
                          {
                             isLoading?
                             <div className="loader" />
@@ -299,11 +374,11 @@ export default function Home() {
                     </div>
                     :
                     <table>
-                        <caption>{asset.name}</caption>
+                        <caption>{asset.name}-{asset.brand}</caption>
                         <thead>
                             <tr>
-                                <th>{t('totalQuantity')}</th>
-                                <th>{t('price')}</th>
+                                <th style={{color: '#adaaad'}}>{t('totalQuantity')}</th>
+                                <th style={{color: '#adaaad'}}>{t('price')}</th>
                             </tr>
                     </thead>
                     <tbody>
@@ -345,3 +420,6 @@ export default function Home() {
 
     )
 }
+
+
+//npm install prettier -D --save-exact

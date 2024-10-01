@@ -1,5 +1,5 @@
 {
-    "appTitle": "KIMSON MEDICS",
+    "appTitle": "YamsApp",
 
      "__comment0": "FORM INPUT LABLES",
     "lableForRegNo": "enter registration number",
@@ -8,6 +8,10 @@
     "email": "email",
     "confirmPassword": "confirm password",
     "enterAmount": "enter amount",
+    "brand": "brand",
+    "totalQuantiy": "total quantity",
+    "buyingPrice0": "buying price@1",
+    "sellingPrice0": "selling price@1",
 
     "__comment1": "FORM INPUT PLACEHOLDERS",
     "InputRegNoPlaceHolder": "your registration number",
@@ -17,6 +21,11 @@
      "emailPlc": "enter email",
      "accPasswordPlc": "enter password",
      "confirmPasswordPlc": "repeat password",
+     "brandPlc": "enter brand name eg: TECHNO",
+     "namePlc": "enter asset name eg: T301",
+     "totalQuantityPlc": "enter total quantity",
+     "buyingPricePlc": "enter buying price@1",
+     "sellingPricePlc": "enter selling price@1",
 
     "__comment2": "BUTTON AND SUDMIT LABLES",
     "continueBtn": "CONTINUE",
@@ -34,6 +43,7 @@
     "tapHere": "tap here" ,
     "logout": "LOGOUT",
     "return": "RETURN",
+    "register": "REGISTER",
     
     "__comment3": "PAGE TEXTS",
     "lang": "LANGUAGE",
@@ -75,9 +85,8 @@
     "assetInStock": "ASSET IN STOCK ",
     "viewAll": "view all",
     "topSales": "TOP ASSET SELLS PROGRESS",
+    "assetReg": "ASSET REGISTRATION",
    
-    
-
     "__comment4": "ERROR AND SUCCESS MESSAGES ",
     "error": "Error!",
     "staffNotExists": "staff does not exists",
@@ -95,6 +104,8 @@
     "notAvailable": "not available",
     "emailSentMsg": "a link to reset your password has been to sent to your email, check your email inbox  and tap a link to reset password. If you do not see our email check the spam folder.  If not found,  resend email after 30 seconds",
     "staffAccStatus": "have no account, create account",
-    "wrongSaleNumberInput": " amount entered should be greater than 0"
+    "wrongSaleNumberInput": " amount entered should be greater than 0",
+
+    "assetIsPresent": "is already present, please add a prefix or suffix to make it different, or go and add stock"
      
 }

@@ -16,7 +16,7 @@ export const SelectedAsset= ({selectedAssetID}) => {
     // Listen for real-time updates
     const unsubscribe = onSnapshot(assetRef, (asset) => {
       if (asset.exists()) {
-        setName(asset.data()['name']);
+        setName(asset.data()['name']+'-'+asset.data()['brand']);
         setRemainedQuantity(asset.data()['quantity']);
         setID(id);
       } else {

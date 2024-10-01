@@ -1,5 +1,5 @@
 {
-    "appTitle": "KIMSON MEDICS",
+    "appTitle": "YamsApp",
 
      "__comment0": "FORM INPUT LABLES",
     "lableForRegNo": "weka namba ya usajili",
@@ -9,6 +9,10 @@
     "email": "barua pepe",
     "confirmPassword": "thibitisha barua pepe",
     "enterAmount": "weka idadi",
+    "brand": "kampuni",
+    "totalQuantiy": "idadi",
+    "buyingPrice0": "bei ya manunuzi@1",
+    "sellingPrice0": "bei ya kuuza@1",
 
     "__comment1": "FORM INPUT PLACEHOLDERS",
     "InputRegNoPlaceHolder": "namba ya usajili",
@@ -17,6 +21,11 @@
     "emailPlc": "ingiza barua pepe",
     "accPasswordPlc": "ingiza nenosiri",
     "confirmPasswordPlc": "rudia nenosiri",
+    "brandPlc": "andika jina la kampuni mfano: TECHNO",
+    "namePlc": "andika jina la bidhaa mfano: T301",
+    "totalQuantityPlc": "andika idadi",
+    "buyingPricePlc": "andika bei ya manunuzi/ulanguzi @1",
+    "sellingPricePlc": "andika bei ya kuuza@1",
 
     "__comment2": "BUTTON AND SUDMIT LABLES",
     "continueBtn": "ENDELEA",
@@ -35,6 +44,7 @@
      "logout": "ONDOKA",
      "viewAll": "orodhesha",
      "return": "RUDISHA",
+     "register": "SAJILI",
   
 
     
@@ -79,6 +89,7 @@
     "staffMembers": "WAFANYAKAZI ",
     "assetInStock": "BIDHAA ZILIZOPO ",
     "topSales": "ZINAZO UZWA ZAIDI",
+    "assetReg": "SAJILI BIDHAA",
     
 
      "__comment4": "ERROR MESSAGES",
@@ -97,6 +108,7 @@
     "notAvailable": "haipo",
     "emailSentMsg": "kiungo cha kuweka upya nenosiri lako kimetumwa kwa barua pepe yako, angalia kikasha chako cha barua pepe na uguse kiungo ili kuweka upya nenosiri. Ikiwa huoni barua pepe yetu angalia folda ya barua taka.  Isipopatikana, tuma barua pepe tena baada ya sekunde 30",
     "staffAccStatus": "huna akaunti, tengeneza akaunti",
-    "wrongSaleNumberInput": "kiasi kinabidi kiwe zaid ya 0"
+    "wrongSaleNumberInput": "kiasi kinabidi kiwe zaid ya 0",
+    "assetIsPresent": "tayari ipo, tafadhali ongeza kiambishi awali au tamati ili kuifanya tofauti au kwenda  kuongeza mzigo"
      
 }
